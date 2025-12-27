@@ -112,12 +112,12 @@
                             @php $standardPackages = \App\Models\Package::where('name', 'like', 'Standard%')->get(); @endphp
                             @foreach($standardPackages as $package)
                             <div class="package-card relative border-2 border-zinc-200 rounded-2xl p-6 cursor-pointer text-center" onclick="selectCard(this, 'standard')">
-                                <input type="radio" name="package_id" value="{{ $package->id }}" class="hidden" required>
+                                <input type="radio" name="package_id" value="{{ $package->id }}" class="hidden" data-duration="{{ $package->duration }}" required>
                                 <div class="w-8 h-8 bg-indigo-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
                                     <iconify-icon icon="lucide:anchor" width="18" class="text-indigo-600"></iconify-icon>
                                 </div>
                                 <h3 class="font-semibold text-zinc-900">{{ $package->name }}</h3>
-                                <p class="text-sm text-zinc-500 mb-3">{{ $package->duration }}</p>
+                                <p class="package-duration text-sm text-zinc-500 mb-3">{{ $package->duration }}</p>
                                 <p class="text-xl font-bold text-indigo-600">RM {{ number_format($package->price_standard, 0, ',', ',') }}</p>
                                 <p class="text-xs text-zinc-400 mt-1">per charter</p>
                             </div>
@@ -131,11 +131,12 @@
                             @php $fullboardPackages = \App\Models\Package::where('name', 'like', 'Full Board%')->get(); @endphp
                             @foreach($fullboardPackages as $package)
                             <div class="package-card relative border-2 border-zinc-200 rounded-2xl p-6 cursor-pointer text-center" onclick="selectCard(this, 'fullboard')">
-                                <input type="radio" name="package_id" value="{{ $package->id }}" class="hidden" data-type="fullboard">
+                                <input type="radio" name="package_id" value="{{ $package->id }}" class="hidden" data-type="fullboard" data-duration="{{ $package->duration }}">
                                 <div class="w-8 h-8 bg-emerald-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
                                     <iconify-icon icon="lucide:utensils" width="18" class="text-emerald-600"></iconify-icon>
                                 </div>
                                 <h3 class="font-semibold text-zinc-900">{{ $package->name }}</h3>
+                                <p class="package-duration text-sm text-zinc-500 mb-3">{{ $package->duration }}</p>
                                 <div class="mt-3 space-y-1">
                                     <p class="text-sm text-zinc-600">Adult: <span class="font-semibold text-zinc-900">RM {{ number_format($package->price_fullboard_adult, 0) }}</span></p>
                                     <p class="text-sm text-zinc-600">Child: <span class="font-semibold text-zinc-900">RM {{ number_format($package->price_fullboard_child, 0) }}</span></p>
@@ -325,6 +326,33 @@
         // Check the radio button
         const radio = card.querySelector("input[type='radio']");
         if(radio) radio.checked = true;
+
+        // Auto-calculate checkout date based on package duration
+        const durationText = radio?.getAttribute('data-duration');
+        if(durationText && checkInDate.value) {
+            const days = parseDuration(durationText);
+            if(days > 0) {
+                updateCheckoutDate(days);
+            }
+        }
+    }
+
+    // Parse duration string like "2D1N" to get number of days
+    function parseDuration(duration) {
+        // Match pattern like "2D1N", "3D2N", "1D0N" etc.
+        const match = duration.match(/(\d+)D/);
+        return match ? parseInt(match[1]) : 0;
+    }
+
+    // Update checkout date based on number of days
+    function updateCheckoutDate(days) {
+        const checkIn = new Date(checkInDate.value);
+        const checkOut = new Date(checkIn);
+        checkOut.setDate(checkOut.getDate() + days);
+        checkOutDate.value = checkOut.toISOString().split('T')[0];
+
+        // Trigger availability check
+        checkAvailability();
     }
 
     function addGuest() {
@@ -559,7 +587,6 @@
     }
 
     // Add event listeners for date inputs
-    checkInDate.addEventListener("change", checkAvailability);
     checkOutDate.addEventListener("change", checkAvailability);
 
     // Update minimum check-out date when check-in changes
@@ -571,6 +598,22 @@
         if(checkOutDate.value && new Date(checkOutDate.value) <= new Date(this.value)){
             checkOutDate.value = minCheckOut;
         }
+
+        // If a package is selected, auto-calculate checkout date
+        const selectedCard = document.querySelector(".package-card.selected");
+        if(selectedCard) {
+            const radio = selectedCard.querySelector("input[type='radio']");
+            const durationText = radio?.getAttribute('data-duration');
+            if(durationText) {
+                const days = parseDuration(durationText);
+                if(days > 0) {
+                    updateCheckoutDate(days);
+                    return; // Skip the rest since updateCheckoutDate handles availability check
+                }
+            }
+        }
+
+        checkAvailability();
     });
 
     // Pre-select package if URL parameter exists
