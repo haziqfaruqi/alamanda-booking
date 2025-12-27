@@ -146,12 +146,12 @@ class GoogleCalendarService
             $event->setDescription($bookingData['description'] ?? '');
 
             $start = new EventDateTime();
-            $start->setDateTime($this->formatDateTime($bookingData['start_date']));
+            $start->setDateTime($this->formatDateTime($bookingData['start_date'], '14:00'));
             $start->setTimeZone('Asia/Kuala_Lumpur');
             $event->setStart($start);
 
             $end = new EventDateTime();
-            $end->setDateTime($this->formatDateTime($bookingData['end_date']));
+            $end->setDateTime($this->formatDateTime($bookingData['end_date'], '12:00'));
             $end->setTimeZone('Asia/Kuala_Lumpur');
             $event->setEnd($end);
 
@@ -196,14 +196,14 @@ class GoogleCalendarService
 
             if (isset($bookingData['start_date'])) {
                 $start = new EventDateTime();
-                $start->setDateTime($this->formatDateTime($bookingData['start_date']));
+                $start->setDateTime($this->formatDateTime($bookingData['start_date'], '14:00'));
                 $start->setTimeZone('Asia/Kuala_Lumpur');
                 $event->setStart($start);
             }
 
             if (isset($bookingData['end_date'])) {
                 $end = new EventDateTime();
-                $end->setDateTime($this->formatDateTime($bookingData['end_date']));
+                $end->setDateTime($this->formatDateTime($bookingData['end_date'], '12:00'));
                 $end->setTimeZone('Asia/Kuala_Lumpur');
                 $event->setEnd($end);
             }
@@ -274,9 +274,16 @@ class GoogleCalendarService
 
     /**
      * Format date/time for Google Calendar API
+     * Adds default time if only date is provided
+     * Check-in: 2:00 PM (14:00), Check-out: 12:00 PM (noon)
      */
-    protected function formatDateTime(string $date): string
+    protected function formatDateTime(string $date, string $defaultTime = '14:00'): string
     {
+        // Check if the date string already has a time component
+        if (strlen($date) <= 10) {
+            // It's just a date, add the default time
+            $date = $date . ' ' . $defaultTime;
+        }
         return date('c', strtotime($date)); // ISO 8601 format
     }
 
