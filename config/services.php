@@ -37,4 +37,10 @@ return [
         'calendar_json' => env('GOOGLE_CALENDAR_JSON'),
     ],
 
+    'toyyibpay' => [
+        'secret_key' => env('TOYYIBPAY_SECRET_KEY'),
+        'category_code' => env('TOYYIBPAY_CATEGORY_CODE'),
+        'env' => env('TOYYIBPAY_ENV', 'sandbox'), // sandbox or production
+    ],
+
 ];

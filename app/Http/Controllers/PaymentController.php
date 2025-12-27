@@ -4,13 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Mail\PaymentReceivedNotification;
 use App\Models\Booking;
+use App\Services\ToyyibPayService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
 class PaymentController extends Controller
 {
+    /**
+     * Truncate string to max length
+     */
+    private function truncate(string $text, int $maxLength): string
+    {
+        return strlen($text) > $maxLength ? substr($text, 0, $maxLength) : $text;
+    }
+
     /**
      * Show the payment page for a booking
      */
@@ -88,11 +98,7 @@ class PaymentController extends Controller
                 break;
 
             case 'toyyibpay':
-                // In real implementation, redirect to ToyyibPay gateway
-                // For now, mark as paid
-                $paymentStatus = 'paid';
-                $paymentReference = 'TOYYIBPAY_' . strtoupper(uniqid());
-                break;
+                return $this->redirectToToyyibPay($booking);
         }
 
         // Update booking with payment info
@@ -114,6 +120,173 @@ class PaymentController extends Controller
         }
 
         return redirect()->route('bookings')->with('success', 'Payment submitted successfully! Your booking is confirmed.');
+    }
+
+    /**
+     * Redirect to ToyyibPay payment gateway
+     */
+    public function redirectToToyyibPay(Booking $booking)
+    {
+        // Load package relationship
+        $booking->load('package');
+
+        $toyyibPay = new ToyyibPayService();
+
+        $paymentData = [
+            'bill_name' => $this->truncate('Alamanda - ' . ($booking->package->name ?? 'Booking'), 30),
+            'bill_description' => sprintf(
+                'Booking #%d - %s to %s (%d pax)',
+                $booking->id,
+                \Carbon\Carbon::parse($booking->check_in_date)->format('d M Y'),
+                \Carbon\Carbon::parse($booking->check_out_date)->format('d M Y'),
+                $booking->total_guests
+            ),
+            'amount' => (int) $booking->total_price,
+            'reference_no' => 'BOOKING-' . $booking->id,
+            'payer_name' => $booking->contact_name,
+            'payer_email' => $booking->contact_email,
+            'payer_phone' => $booking->contact_phone,
+            'return_url' => route('payment.toyyibpay.return'),
+            'callback_url' => route('payment.toyyibpay.callback'),
+        ];
+
+        $result = $toyyibPay->createBill($paymentData);
+
+        if ($result['success']) {
+            // Store pending payment info in session
+            session([
+                'toyyibpay_pending_booking' => $booking->id,
+                'toyyibpay_bill_code' => $result['bill_code'],
+            ]);
+
+            // Redirect to ToyyibPay payment page
+            return redirect()->away($result['payment_url']);
+        }
+
+        Log::error('ToyyibPay bill creation failed', [
+            'result' => $result,
+            'payment_data' => $paymentData,
+            'config' => [
+                'secret_key_set' => !empty(config('services.toyyibpay.secret_key')),
+                'category_code_set' => !empty(config('services.toyyibpay.category_code')),
+                'env' => config('services.toyyibpay.env'),
+            ],
+        ]);
+
+        $errorMessage = $result['message'] ?? 'Failed to create payment';
+
+        return back()->withErrors([
+            'toyyibpay' => $errorMessage . '. Please try another payment method or contact support.'
+        ]);
+    }
+
+    /**
+     * Handle return from ToyyibPay (user-facing)
+     */
+    public function toyyibpayReturn(Request $request)
+    {
+        $billCode = $request->input('billcode');
+        $status = $request->input('status_id');
+        $refNo = $request->input('refno');
+
+        Log::info('ToyyibPay return', [
+            'billcode' => $billCode,
+            'status_id' => $status,
+            'refno' => $refNo,
+        ]);
+
+        // Get pending booking from session
+        $bookingId = session('toyyibpay_pending_booking');
+        $storedBillCode = session('toyyibpay_bill_code');
+
+        if (!$bookingId || $storedBillCode !== $billCode) {
+            return redirect()->route('bookings')->with('error', 'Invalid payment session.');
+        }
+
+        $booking = Booking::find($bookingId);
+
+        if (!$booking) {
+            return redirect()->route('bookings')->with('error', 'Booking not found.');
+        }
+
+        // Clear session
+        session()->forget(['toyyibpay_pending_booking', 'toyyibpay_bill_code']);
+
+        // Check if payment was successful
+        if ($status == '1') {
+            // Payment successful - update booking
+            // Note: The callback might have already updated this, but we handle both cases
+            if ($booking->payment_status !== 'paid') {
+                $booking->update([
+                    'payment_method' => 'toyyibpay',
+                    'payment_reference' => $billCode,
+                    'payment_status' => 'paid',
+                    'status' => 'confirmed',
+                    'confirmed_at' => now(),
+                ]);
+
+                $this->generateReceipt($booking);
+                $this->notifyStaffPaymentReceived($booking);
+            }
+
+            return redirect()->route('bookings')->with('success', 'Payment successful! Your booking is confirmed.');
+        }
+
+        // Payment failed or pending
+        return redirect()->route('payment', ['booking' => $bookingId])
+            ->with('error', 'Payment was not completed. Please try again or use another payment method.');
+    }
+
+    /**
+     * Handle ToyyibPay server callback
+     */
+    public function toyyibpayCallback(Request $request)
+    {
+        $billCode = $request->input('billcode');
+        $status = $request->input('status');
+        $refNo = $request->input('refno');
+        $amount = $request->input('amount');
+
+        Log::info('ToyyibPay callback', [
+            'billcode' => $billCode,
+            'status' => $status,
+            'refno' => $refNo,
+            'amount' => $amount,
+            'all' => $request->all(),
+        ]);
+
+        // Find booking by bill code stored in payment_reference
+        $booking = Booking::where('payment_reference', $billCode)
+            ->orWhere('id', function ($query) use ($refNo) {
+                // Try to extract booking ID from refno
+                if (preg_match('/BOOKING-(\d+)/', $refNo, $matches)) {
+                    $query->where('id', $matches[1]);
+                }
+            })
+            ->first();
+
+        if (!$booking) {
+            Log::warning('ToyyibPay callback: Booking not found', ['billcode' => $billCode, 'refno' => $refNo]);
+            return response()->json(['status' => 'error', 'message' => 'Booking not found']);
+        }
+
+        // Process payment if successful
+        if ($status == '1' && $booking->payment_status !== 'paid') {
+            $booking->update([
+                'payment_method' => 'toyyibpay',
+                'payment_reference' => $billCode,
+                'payment_status' => 'paid',
+                'status' => 'confirmed',
+                'confirmed_at' => now(),
+            ]);
+
+            $this->generateReceipt($booking);
+            $this->notifyStaffPaymentReceived($booking);
+
+            Log::info('ToyyibPay payment processed successfully', ['booking_id' => $booking->id]);
+        }
+
+        return response()->json(['status' => 'success']);
     }
 
     /**

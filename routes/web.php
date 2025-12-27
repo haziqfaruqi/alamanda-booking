@@ -53,6 +53,10 @@ Route::middleware(['auth', 'is.not.admin'])->group(function () {
     Route::get('/payment/{booking}', [App\Http\Controllers\PaymentController::class, 'show'])->name('payment');
     Route::post('/payment/{booking}', [App\Http\Controllers\PaymentController::class, 'process'])->name('payment.process');
 
+// ToyyibPay Callback Routes (outside auth - called by ToyyibPay server)
+Route::get('/payment/toyyibpay/return', [App\Http\Controllers\PaymentController::class, 'toyyibpayReturn'])->name('payment.toyyibpay.return');
+Route::post('/payment/toyyibpay/callback', [App\Http\Controllers\PaymentController::class, 'toyyibpayCallback'])->name('payment.toyyibpay.callback');
+
     // Invoice
     Route::get('/invoice/{booking}', [App\Http\Controllers\InvoiceController::class, 'show'])->name('invoice.show');
     Route::get('/invoice/{id}/generate', [App\Http\Controllers\InvoiceController::class, 'generate'])->name('invoice.generate');
