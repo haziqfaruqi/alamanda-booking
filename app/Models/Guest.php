@@ -19,8 +19,11 @@ class Guest extends Model
         'booking_id',
         'guest_name',
         'guest_ic',
+        'id_type',
+        'id_number',
         'guest_type',
         'age',
+        'date_of_birth',
     ];
 
     /**
@@ -30,6 +33,7 @@ class Guest extends Model
      */
     protected $casts = [
         'age' => 'integer',
+        'date_of_birth' => 'date',
     ];
 
     /**

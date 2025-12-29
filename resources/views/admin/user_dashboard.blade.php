@@ -66,11 +66,6 @@ body{
 .table th{
   font-weight:600;
 }
-
-.password{
-  font-family:monospace;
-  letter-spacing:1px;
-}
 </style>
 </head>
 
@@ -94,9 +89,6 @@ body{
   <!-- HEADER -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold mb-0">User Lists</h4>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
-      + Add User
-    </button>
   </div>
 
   <!-- SUCCESS MESSAGE -->
@@ -137,9 +129,7 @@ body{
             <th>Full Name</th>
             <th>Phone Number</th>
             <th>Email</th>
-            <th>Password</th>
             <th>Registered Date</th>
-            <th>Action</th>
           </tr>
         </thead>
 
@@ -150,24 +140,11 @@ body{
             <td>{{ $user->name }}</td>
             <td>{{ $user->phone ?? '-' }}</td>
             <td>{{ $user->email }}</td>
-            <td class="password">********</td>
             <td>{{ $user->created_at->format('d M Y') }}</td>
-            <td>
-              <button class="btn btn-sm btn-outline-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#editUserModal{{ $user->id }}">
-                Edit
-              </button>
-              <form method="POST" action="{{ route('admin.users.destroy', $user->id) }}" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this user?')">Delete</button>
-              </form>
-            </td>
           </tr>
           @empty
           <tr>
-            <td colspan="7" class="text-center text-muted py-4">No users found</td>
+            <td colspan="5" class="text-center text-muted py-4">No users found</td>
           </tr>
           @endforelse
         </tbody>
@@ -177,97 +154,6 @@ body{
   </div>
 
 </main>
-
-<!-- ADD USER MODAL -->
-<div class="modal fade" id="addUserModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Add New User</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <form method="POST" action="{{ route('admin.users.store') }}">
-        @csrf
-
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Full Name</label>
-            <input type="text" name="name" class="form-control" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Phone Number</label>
-            <input type="text" name="phone" class="form-control" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" required minlength="6">
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Add User</button>
-        </div>
-      </form>
-
-    </div>
-  </div>
-</div>
-
-@foreach($users ?? [] as $user)
-<!-- EDIT USER MODAL -->
-<div class="modal fade" id="editUserModal{{ $user->id }}" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Edit User</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
-        @csrf
-        @method('PUT')
-
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Full Name</label>
-            <input type="text" name="name" class="form-control" value="{{ $user->name }}" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" value="{{ $user->email }}" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Phone Number</label>
-            <input type="text" name="phone" class="form-control" value="{{ $user->phone ?? '' }}" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">New Password (leave empty to keep current)</label>
-            <input type="password" name="password" class="form-control" minlength="6">
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
-      </form>
-
-    </div>
-  </div>
-</div>
-@endforeach
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -15,9 +15,7 @@
             <div class="bg-white rounded-3xl p-8 md:p-10 shadow-lg border border-zinc-200">
                 <!-- Header -->
                 <div class="text-center mb-8">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <iconify-icon icon="lucide:anchor" width="32" class="text-indigo-600"></iconify-icon>
-                    </div>
+                    <img src="{{ asset('storage/pic/logo_alamanda.png') }}" alt="Alamanda Logo" class="w-20 h-20 mx-auto mb-4">
                     <h1 class="text-2xl font-bold text-zinc-900 mb-2">Create Account</h1>
                     <p class="text-zinc-500">Join Alamanda Houseboat today</p>
                 </div>

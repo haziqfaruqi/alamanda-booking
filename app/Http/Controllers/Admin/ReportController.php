@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Package;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,7 +19,6 @@ class ReportController extends Controller
             'bookings' => 'Booking Report',
             'revenue' => 'Revenue Report',
             'packages' => 'Package Report',
-            'customers' => 'Customer Report',
         ];
 
         $years = Booking::select(DB::raw('YEAR(created_at) as year'))
@@ -42,7 +40,7 @@ class ReportController extends Controller
     public function generate(Request $request)
     {
         $validated = $request->validate([
-            'report_type' => 'required|in:bookings,revenue,packages,customers',
+            'report_type' => 'required|in:bookings,revenue,packages',
             'month' => 'nullable|integer|min:1|max:12',
             'year' => 'required|integer|min:2020|max:2099',
         ]);
@@ -69,7 +67,6 @@ class ReportController extends Controller
             'bookings' => 'booking_report',
             'revenue' => 'revenue_report',
             'packages' => 'package_report',
-            'customers' => 'customer_report',
         ];
 
         return "{$names[$reportType]}_{$monthName}_{$year}.csv";
@@ -84,7 +81,6 @@ class ReportController extends Controller
             'bookings' => ['ID', 'Contact Name', 'Email', 'Phone', 'Package', 'Check-In', 'Check-Out', 'Adults', 'Children', 'Total Price', 'Status', 'Payment Status', 'Booking Date'],
             'revenue' => ['ID', 'Contact Name', 'Package', 'Check-In Date', 'Total Price', 'Payment Status', 'Booking Date'],
             'packages' => ['ID', 'Package Name', 'Duration', 'Standard Price', 'Full Board Adult', 'Full Board Child', 'Active', 'Created Date'],
-            'customers' => ['ID', 'Name', 'Email', 'Phone', 'Role', 'Registered Date'],
         ];
 
         return $headers[$reportType] ?? [];
@@ -99,7 +95,6 @@ class ReportController extends Controller
             'bookings' => Booking::with('package'),
             'revenue' => Booking::with('package')->where('payment_status', 'paid'),
             'packages' => Package::query(),
-            'customers' => User::where('role', 'user'),
         };
 
         // Filter by year
@@ -154,14 +149,6 @@ class ReportController extends Controller
                     $record->price_fullboard_adult,
                     $record->price_fullboard_child,
                     $record->is_active ? 'Yes' : 'No',
-                    $record->created_at->format('d M Y'),
-                ],
-                'customers' => [
-                    $record->id,
-                    $record->name,
-                    $record->email,
-                    $record->phone ?? '',
-                    ucfirst($record->role),
                     $record->created_at->format('d M Y'),
                 ],
             };

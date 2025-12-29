@@ -7,6 +7,7 @@
             'Adventure' => '#adventure',
             'Destination' => '#kenyir',
             'Packages' => '#packages',
+            'Gallery' => route('gallery'),
         ],
         'ctaHref' => '#packages',
         'ctaLabel' => 'Book Trip',
@@ -123,9 +124,9 @@
                             The lake is surrounded by lush tropical rainforest that serves as a habitat for rare flora and fauna. It is also a popular angling destination, home to species like the Giant Snakehead and Kelah.
                         </p>
                     </div>
-                    <button class="text-sm font-medium text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-all">
+                    <a href="{{ route('gallery') }}" class="text-sm font-medium text-white underline underline-offset-4 decoration-zinc-600 hover:decoration-white transition-all">
                         View Gallery
-                    </button>
+                    </a>
                 </div>
 
                 <!-- Featured Image -->
@@ -305,37 +306,45 @@
                 <p class="text-lg text-zinc-400">Real experiences from those who sailed with us</p>
             </div>
 
+            @if($testimonials->isNotEmpty())
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                @foreach($testimonials as $testimonial)
                 <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/10">
                     <div class="flex items-start gap-4 mb-4">
-                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=60"
-                             alt="Guest"
-                             class="w-12 h-12 rounded-full object-cover">
-                        <div>
-                            <h4 class="font-medium text-white">Ahmad Razak</h4>
-                            <p class="text-sm text-zinc-400">Family Trip, Kuala Lumpur</p>
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-white font-semibold text-lg">
+                            {{ strtoupper(substr($testimonial->user->name ?? 'G', 0, 1)) }}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-medium text-white">{{ $testimonial->user->name ?? 'Guest' }}</h4>
+                                <div class="flex gap-0.5">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <iconify-icon icon="lucide:star" width="14"
+                                            class="@if($i <= $testimonial->rating) text-yellow-400 @else text-zinc-600 @endif">
+                                        </iconify-icon>
+                                    @endfor
+                                </div>
+                            </div>
+                            <p class="text-sm text-zinc-400">
+                                {{ $testimonial->created_at->format('M Y') }}
+                                @if($testimonial->package)
+                                    · {{ $testimonial->package->name ?? 'Package' }}
+                                @endif
+                            </p>
                         </div>
                     </div>
                     <p class="text-sm text-zinc-300 leading-relaxed">
-                        "An absolutely breathtaking experience! Waking up to the sound of water and surrounded by nature was pure magic. The kids loved fishing and jumping into the lake. Already planning our next trip!"
+                        "{{ $testimonial->feedback }}"
                     </p>
                 </div>
-
-                <div class="bg-white/10 backdrop-blur-sm rounded-xl p-6 border border-white/10">
-                    <div class="flex items-start gap-4 mb-4">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=60"
-                             alt="Guest"
-                             class="w-12 h-12 rounded-full object-cover">
-                        <div>
-                            <h4 class="font-medium text-white">Raj Kumar</h4>
-                            <p class="text-sm text-zinc-400">Fishing Trip, Singapore</p>
-                        </div>
-                    </div>
-                    <p class="text-sm text-zinc-300 leading-relaxed">
-                        "Came for the fishing, stayed for the experience. Caught some amazing Kelah and the captain knew all the best spots. The houseboat was clean and comfortable throughout our 3-day trip."
-                    </p>
-                </div>
+                @endforeach
             </div>
+            @else
+            <div class="text-center text-zinc-400 py-12">
+                <iconify-icon icon="lucide:quote" width="48" class="mb-4 opacity-50"></iconify-icon>
+                <p>No reviews yet. Be the first to share your experience!</p>
+            </div>
+            @endif
         </div>
     </section>
 

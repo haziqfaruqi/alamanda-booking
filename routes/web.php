@@ -22,12 +22,21 @@ Route::get('/', function () {
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/alamanda_home', [App\Http\Controllers\HomeController::class, 'index'])->name('home.view');
 
+// Gallery Page
+Route::get('/gallery', [App\Http\Controllers\HomeController::class, 'gallery'])->name('gallery');
+
 // ==================== AUTH ROUTES ====================
 // Login
 Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('login');
 Route::get('/alamanda_login', [App\Http\Controllers\AuthController::class, 'showLogin'])->name('login.view');
 Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login.post');
 Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
+// Forgot Password
+Route::get('/forgot-password', [App\Http\Controllers\AuthController::class, 'showForgotPassword'])->name('forgot-password');
+Route::post('/forgot-password', [App\Http\Controllers\AuthController::class, 'sendResetLink'])->name('password.email');
+Route::get('/reset-password/{token}', [App\Http\Controllers\AuthController::class, 'showResetPassword'])->name('password.reset');
+Route::post('/reset-password', [App\Http\Controllers\AuthController::class, 'resetPassword'])->name('password.update');
 
 // Register
 Route::get('/register', [App\Http\Controllers\AuthController::class, 'showRegister'])->name('register');
@@ -53,10 +62,19 @@ Route::middleware(['auth', 'is.not.admin'])->group(function () {
     Route::get('/payment/{booking}', [App\Http\Controllers\PaymentController::class, 'show'])->name('payment');
     Route::post('/payment/{booking}', [App\Http\Controllers\PaymentController::class, 'process'])->name('payment.process');
 
+    // Reviews
+    Route::post('/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+    Route::get('/reviews/{bookingId}', [App\Http\Controllers\ReviewController::class, 'show'])->name('reviews.show');
+    Route::put('/reviews/{id}', [App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update');
+    Route::delete('/reviews/{id}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
+});
+
 // ToyyibPay Callback Routes (outside auth - called by ToyyibPay server)
 Route::get('/payment/toyyibpay/return', [App\Http\Controllers\PaymentController::class, 'toyyibpayReturn'])->name('payment.toyyibpay.return');
 Route::post('/payment/toyyibpay/callback', [App\Http\Controllers\PaymentController::class, 'toyyibpayCallback'])->name('payment.toyyibpay.callback');
 
+// Invoice & Receipt Routes (accessible by both users and admins)
+Route::middleware(['auth'])->group(function () {
     // Invoice
     Route::get('/invoice/{booking}', [App\Http\Controllers\InvoiceController::class, 'show'])->name('invoice.show');
     Route::get('/invoice/{id}/generate', [App\Http\Controllers\InvoiceController::class, 'generate'])->name('invoice.generate');
@@ -66,12 +84,6 @@ Route::post('/payment/toyyibpay/callback', [App\Http\Controllers\PaymentControll
     Route::get('/receipt/{id}/generate', [App\Http\Controllers\ReceiptController::class, 'generate'])->name('receipt.generate');
     Route::get('/receipt/{id}/download', [App\Http\Controllers\ReceiptController::class, 'download'])->name('receipt.download');
     Route::get('/receipt/{id}/view', [App\Http\Controllers\ReceiptController::class, 'view'])->name('receipt.view');
-
-    // Reviews
-    Route::post('/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
-    Route::get('/reviews/{bookingId}', [App\Http\Controllers\ReviewController::class, 'show'])->name('reviews.show');
-    Route::put('/reviews/{id}', [App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update');
-    Route::delete('/reviews/{id}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
 });
 
 // ==================== ADMIN ROUTES (Protected) ====================

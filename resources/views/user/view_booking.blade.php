@@ -134,10 +134,17 @@
                                 <iconify-icon icon="lucide:eye" width="16"></iconify-icon>
                                 View Details
                             </button>
+                            @if($booking->review && $booking->review->count() > 0)
+                            <button disabled class="inline-flex items-center gap-2 px-5 py-2.5 bg-zinc-100 border border-zinc-200 rounded-xl text-sm font-medium text-zinc-400 cursor-not-allowed">
+                                <iconify-icon icon="lucide:star" width="16"></iconify-icon>
+                                Rated
+                            </button>
+                            @else
                             <button onclick="openReviewModal({{ $booking->id }}, '{{ $booking->package->name ?? 'Package' }}')" class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-50 border border-amber-200 rounded-xl text-sm font-medium text-amber-700 hover:bg-amber-100 transition-all">
                                 <iconify-icon icon="lucide:star" width="16"></iconify-icon>
                                 Rate & Review
                             </button>
+                            @endif
                             <a href="{{ route('receipt.generate', ['id' => $booking->id]) }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-zinc-300 rounded-xl text-sm font-medium text-zinc-700 hover:bg-zinc-50 hover:border-zinc-400 transition-all">
                                 <iconify-icon icon="lucide:download" width="16"></iconify-icon>
                                 Receipt
@@ -162,6 +169,13 @@
                     </div>
                     @endforeach
                 </div>
+
+                <!-- Pagination -->
+                @if($bookings->hasPages())
+                <div class="mt-8 flex justify-center">
+                    {{ $bookings->appends([])->links('pagination.tailwind') }}
+                </div>
+                @endif
             @else
                 <!-- Empty State -->
                 <div class="bg-white rounded-3xl border border-zinc-200 p-12 text-center shadow-sm">

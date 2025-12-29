@@ -130,8 +130,7 @@ body{
         <small class="text-muted mt-1 d-block">
           <strong>Booking Report:</strong> All booking details including customer info<br>
           <strong>Revenue Report:</strong> Paid bookings with revenue data<br>
-          <strong>Package Report:</strong> Package inventory and pricing<br>
-          <strong>Customer Report:</strong> Registered users list
+          <strong>Package Report:</strong> Package inventory and pricing
         </small>
       </div>
 

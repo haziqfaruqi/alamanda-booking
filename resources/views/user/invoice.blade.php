@@ -21,18 +21,18 @@
             <!-- Invoice Card -->
             <div class="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden">
                 <!-- Invoice Header -->
-                <div class="bg-gradient-to-r from-amber-50 to-orange-50 px-6 py-4 border-b border-zinc-200">
+                <div class="bg-indigo-600 px-6 py-4 border-b border-zinc-200">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center">
-                                <iconify-icon icon="lucide:file-text" width="24" class="text-amber-600"></iconify-icon>
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                <iconify-icon icon="lucide:file-text" width="24" class="text-white"></iconify-icon>
                             </div>
                             <div>
-                                <h2 class="font-semibold text-zinc-900">{{ $invoiceNumber }}</h2>
-                                <p class="text-sm text-zinc-500">Invoice Date: {{ \Carbon\Carbon::parse($booking->created_at)->format('d M Y') }}</p>
+                                <h2 class="font-semibold text-white">{{ $invoiceNumber }}</h2>
+                                <p class="text-sm text-indigo-200">Invoice Date: {{ \Carbon\Carbon::parse($booking->created_at)->format('d M Y') }}</p>
                             </div>
                         </div>
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white text-indigo-600">
                             UNPAID
                         </span>
                     </div>
@@ -118,24 +118,24 @@
 
                     <!-- Amount -->
                     <div class="mb-6">
-                        <div class="bg-amber-50 rounded-2xl p-4">
+                        <div class="bg-indigo-600 rounded-2xl p-4">
                             @if($booking->original_price && $booking->original_price > $booking->total_price)
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-amber-700">Original Price</span>
-                                    <span class="text-base text-amber-900 line-through">RM {{ number_format($booking->original_price, 0, ',', ',') }}</span>
+                                    <span class="text-sm text-indigo-100">Original Price</span>
+                                    <span class="text-base text-white/70 line-through">RM {{ number_format($booking->original_price, 0, ',', ',') }}</span>
                                 </div>
                                 @if($booking->coupon_code)
                                 <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm text-green-700">Discount ({{ $booking->coupon_code }})</span>
-                                    <span class="text-base font-medium text-green-700">-RM {{ number_format($booking->discount_amount, 0, ',', ',') }}</span>
+                                    <span class="text-sm text-emerald-200">Discount ({{ $booking->coupon_code }})</span>
+                                    <span class="text-base font-medium text-emerald-200">-RM {{ number_format($booking->discount_amount, 0, ',', ',') }}</span>
                                 </div>
                                 @endif
                             @endif
                             <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm text-amber-700">Total Amount Due</span>
-                                <span class="text-2xl font-bold text-amber-900">RM {{ number_format($booking->total_price, 0, ',', ',') }}</span>
+                                <span class="text-sm text-indigo-100">Total Amount Due</span>
+                                <span class="text-2xl font-bold text-white">RM {{ number_format($booking->total_price, 0, ',', ',') }}</span>
                             </div>
-                            <p class="text-xs text-amber-600">Payment due within 3 days</p>
+                            <p class="text-xs text-indigo-200">Payment due within 3 days</p>
                         </div>
                     </div>
 

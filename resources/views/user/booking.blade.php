@@ -148,17 +148,18 @@
 
                         <!-- Guest Count for Fullboard -->
                         <div id="fullboardGuestCount" class="hidden mt-6 p-4 bg-zinc-50 rounded-xl">
-                            <p class="text-sm font-medium text-zinc-700 mb-4">Number of Guests</p>
+                            <p class="text-sm font-medium text-zinc-700 mb-4">Number of Guests (Auto-calculated from IC)</p>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-zinc-600 mb-2">Adults *</label>
-                                    <input type="number" name="total_adults" min="1" value="20" class="w-full px-4 py-2.5 border border-zinc-300 rounded-lg text-sm">
+                                    <input type="number" name="total_adults" min="1" value="0" readonly class="w-full px-4 py-2.5 border border-zinc-300 rounded-lg text-sm bg-zinc-100">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-zinc-600 mb-2">Children *</label>
-                                    <input type="number" name="total_children" min="0" value="0" class="w-full px-4 py-2.5 border border-zinc-300 rounded-lg text-sm">
+                                    <input type="number" name="total_children" min="0" value="0" readonly class="w-full px-4 py-2.5 border border-zinc-300 rounded-lg text-sm bg-zinc-100">
                                 </div>
                             </div>
+                            <p class="text-xs text-zinc-500 mt-2">Adults: 13+ years | Children: 12 years and below</p>
                         </div>
                     </div>
                 </div>
@@ -337,18 +338,19 @@
         }
     }
 
-    // Parse duration string like "2D1N" to get number of days
+    // Parse duration string like "2D1N" to get number of nights
     function parseDuration(duration) {
         // Match pattern like "2D1N", "3D2N", "1D0N" etc.
-        const match = duration.match(/(\d+)D/);
-        return match ? parseInt(match[1]) : 0;
+        // Extract the nights (N) value - e.g., "2D1N" = 1 night, "3D2N" = 2 nights
+        const match = duration.match(/(\d+)N/);
+        return match ? parseInt(match[1]) : 1; // Default to 1 night if not found
     }
 
-    // Update checkout date based on number of days
-    function updateCheckoutDate(days) {
+    // Update checkout date based on number of nights
+    function updateCheckoutDate(nights) {
         const checkIn = new Date(checkInDate.value);
         const checkOut = new Date(checkIn);
-        checkOut.setDate(checkOut.getDate() + days);
+        checkOut.setDate(checkOut.getDate() + nights);
         checkOutDate.value = checkOut.toISOString().split('T')[0];
 
         // Trigger availability check
@@ -368,19 +370,160 @@
             <div class="flex items-center justify-between mb-3">
                 <h4 class="font-medium text-zinc-900">Guest ${guestCount}</h4>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-xs font-medium text-zinc-600 mb-1.5">Full Name *</label>
                     <input type="text" name="guests[${guestCount}][name]" oninput="validateGuests()" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm" placeholder="Guest name">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-zinc-600 mb-1.5">IC Number *</label>
-                    <input type="text" name="guests[${guestCount}][ic]" oninput="validateGuests()" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm" placeholder="IC number">
+                    <label class="block text-xs font-medium text-zinc-600 mb-1.5">ID Type *</label>
+                    <select name="guests[${guestCount}][id_type]" onchange="toggleIdInput(this, ${guestCount}); validateGuests();" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm">
+                        <option value="ic">IC (Malaysian)</option>
+                        <option value="passport">Passport (Foreigner)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-600 mb-1.5" id="id-label-${guestCount}">IC Number *</label>
+                    <input type="text" name="guests[${guestCount}][id_number]" oninput="calculateAge(${guestCount}); validateGuests();" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm" id="id-input-${guestCount}" placeholder="e.g., 010101010101">
+                    <p class="text-xs text-zinc-500 mt-1" id="age-display-${guestCount}"></p>
                 </div>
             </div>
+            <!-- Date of Birth field for passport holders (hidden by default) -->
+            <div class="mt-3 hidden" id="dob-container-${guestCount}">
+                <label class="block text-xs font-medium text-zinc-600 mb-1.5">Date of Birth * (for age calculation)</label>
+                <input type="date" name="guests[${guestCount}][date_of_birth]" onchange="calculateAgeFromDob(${guestCount})" class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm" id="dob-input-${guestCount}">
+            </div>
+            <input type="hidden" name="guests[${guestCount}][age]" id="age-hidden-${guestCount}">
         `;
         guestContainer.appendChild(div);
         validateGuests();
+    }
+
+    function toggleIdInput(select, guestNum) {
+        const label = document.getElementById(`id-label-${guestNum}`);
+        const input = document.getElementById(`id-input-${guestNum}`);
+        const dobContainer = document.getElementById(`dob-container-${guestNum}`);
+        const ageDisplay = document.getElementById(`age-display-${guestNum}`);
+
+        if (select.value === 'passport') {
+            label.textContent = 'Passport Number *';
+            input.placeholder = 'e.g., A1234567';
+            // Show DOB field for passport holders
+            if (dobContainer) dobContainer.classList.remove('hidden');
+            ageDisplay.textContent = '';
+        } else {
+            label.textContent = 'IC Number *';
+            input.placeholder = 'e.g., 010101010101';
+            // Hide DOB field for IC holders (age calculated from IC)
+            if (dobContainer) {
+                dobContainer.classList.add('hidden');
+                document.getElementById(`dob-input-${guestNum}`).value = '';
+            }
+        }
+
+        // Clear age hidden input when ID type changes
+        document.getElementById(`age-hidden-${guestNum}`).value = '';
+        validateGuests();
+        updateGuestCounts();
+    }
+
+    // Calculate age from date of birth (for passport holders)
+    function calculateAgeFromDob(guestNum) {
+        const dobInput = document.getElementById(`dob-input-${guestNum}`);
+        const ageHidden = document.getElementById(`age-hidden-${guestNum}`);
+        const ageDisplay = document.getElementById(`age-display-${guestNum}`);
+
+        if (dobInput.value) {
+            const dob = new Date(dobInput.value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+
+            ageHidden.value = age;
+            ageDisplay.textContent = `Age: ${age} years old`;
+            ageDisplay.className = 'text-xs text-emerald-600 mt-1';
+        } else {
+            ageHidden.value = '';
+            ageDisplay.textContent = '';
+        }
+
+        validateGuests();
+        updateGuestCounts();
+    }
+
+    function calculateAge(guestNum) {
+        const idType = document.querySelector(`select[name="guests[${guestNum}][id_type]"]`).value;
+        const idNumber = document.getElementById(`id-input-${guestNum}`).value;
+        const ageDisplay = document.getElementById(`age-display-${guestNum}`);
+        const ageHidden = document.getElementById(`age-hidden-${guestNum}`);
+
+        if (idType === 'ic' && idNumber.length >= 12) {
+            // Malaysian IC format: YYMMDD-PB-###G
+            // Extract birth year from first 2 digits
+            const yy = parseInt(idNumber.substring(0, 2));
+            const currentYear = new Date().getFullYear();
+            const currentCentury = Math.floor(currentYear / 100) * 100;
+
+            // Determine if born in 1900s or 2000s
+            let birthYear = currentCentury + yy;
+            if (birthYear > currentYear) {
+                birthYear -= 100;
+            }
+
+            const age = currentYear - birthYear;
+            ageDisplay.textContent = `Age: ${age} years old`;
+            ageDisplay.className = 'text-xs text-emerald-600 mt-1';
+            ageHidden.value = age;
+
+            // Update guest count after age calculation
+            updateGuestCounts();
+        } else if (idType === 'passport') {
+            // For passport, we can't calculate age from the number
+            // You may want to add a separate date of birth field
+            ageDisplay.textContent = '';
+            ageHidden.value = '';
+
+            // Update guest count after passport input
+            updateGuestCounts();
+        } else {
+            ageDisplay.textContent = '';
+            ageHidden.value = '';
+
+            // Update guest count when cleared
+            updateGuestCounts();
+        }
+        validateGuests();
+    }
+
+    // Update adults and children count based on ages
+    function updateGuestCounts() {
+        let adults = 0;
+        let children = 0;
+
+        document.querySelectorAll(".guest-form-item").forEach(g => {
+            const ageHidden = g.querySelector("input[type='hidden'][name$='[age]']");
+            const age = ageHidden ? parseInt(ageHidden.value) : null;
+
+            // If no age data, count as adult by default
+            if (age === null || age === NaN || age === '') {
+                adults++;
+            } else if (age <= 12) {
+                children++;
+            } else {
+                adults++;
+            }
+        });
+
+        // Update the fullboard guest count inputs
+        const adultsInput = document.querySelector("input[name='total_adults']");
+        const childrenInput = document.querySelector("input[name='total_children']");
+
+        if (adultsInput) adultsInput.value = adults;
+        if (childrenInput) childrenInput.value = children;
     }
 
     function removeGuest() {
@@ -389,20 +532,34 @@
             guestForms[guestForms.length - 1].remove();
             guestCount--;
             validateGuests();
+            updateGuestCounts();
         }
     }
 
     function validateGuests() {
         let filled = 0;
         document.querySelectorAll(".guest-form-item").forEach(g => {
-            const inputs = g.querySelectorAll("input");
-            if([...inputs].every(i => i.value.trim() !== "")) filled++;
+            const inputs = g.querySelectorAll("input, select");
+            let allFilled = true;
+            inputs.forEach(i => {
+                if (!i.value || i.value.trim() === "") {
+                    allFilled = false;
+                }
+            });
+            if (allFilled) filled++;
         });
         totalGuestsInput.value = filled;
-        guestCountText.textContent = `${filled} / ${MAX_GUESTS} guests`;
+
+        const guestCountTextEl = document.getElementById("guestCountText");
+        if (guestCountTextEl) {
+            guestCountTextEl.textContent = `${filled} / ${MAX_GUESTS} guests`;
+        }
 
         // Enable submit if at least 1 guest and dates are available
-        submitBtn.disabled = filled < 1 || !isDatesAvailable;
+        const canSubmit = filled >= 1 && isDatesAvailable;
+        submitBtn.disabled = !canSubmit;
+
+        console.log('Validation:', { filled, isDatesAvailable, canSubmit });
 
         // Update guest count status styling
         const guestCountStatus = document.getElementById("guestCountStatus");

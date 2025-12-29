@@ -12,7 +12,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        // Send booking reminder emails daily at 9 AM
+        $schedule->command('bookings:send-reminders --days=3')
+            ->dailyAt('09:00')
+            ->description('Send booking reminders 3 days before check-in');
+
+        // Also send 1 day reminder at 9 AM
+        $schedule->command('bookings:send-reminders --days=1')
+            ->dailyAt('09:00')
+            ->description('Send booking reminders 1 day before check-in');
     }
 
     /**

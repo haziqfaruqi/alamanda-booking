@@ -10,11 +10,24 @@ use Illuminate\Support\Facades\Response;
 class ReceiptController extends Controller
 {
     /**
+     * Check if user can access the receipt (admin or booking owner)
+     */
+    private function canAccessReceipt($booking)
+    {
+        return auth()->user()->isAdmin() || auth()->id() === $booking->user_id;
+    }
+
+    /**
      * Generate PDF receipt for a booking
      */
     public function generate($id)
     {
         $booking = Booking::with(['package', 'user', 'guests'])->findOrFail($id);
+
+        // Check authorization
+        if (!$this->canAccessReceipt($booking)) {
+            abort(403, 'You do not have permission to access this receipt.');
+        }
 
         // Generate invoice number
         $invoiceNumber = 'INV-' . date('Ymd') . '-' . str_pad(strval($booking->id), 3, '0', STR_PAD_LEFT);
@@ -61,6 +74,11 @@ class ReceiptController extends Controller
     {
         $booking = Booking::findOrFail($id);
 
+        // Check authorization
+        if (!$this->canAccessReceipt($booking)) {
+            abort(403, 'You do not have permission to access this receipt.');
+        }
+
         if (!$booking->receipt_path) {
             return back()->with('error', 'Receipt not found. Please generate receipt first.');
         }
@@ -85,6 +103,11 @@ class ReceiptController extends Controller
     public function view($id)
     {
         $booking = Booking::with(['package', 'user', 'guests'])->findOrFail($id);
+
+        // Check authorization
+        if (!$this->canAccessReceipt($booking)) {
+            abort(403, 'You do not have permission to access this receipt.');
+        }
 
         if (!$booking->receipt_path) {
             // Generate receipt if it doesn't exist

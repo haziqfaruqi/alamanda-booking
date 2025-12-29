@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BookingConfirmationMail;
 use App\Mail\PaymentReceivedNotification;
 use App\Models\Booking;
 use App\Services\ToyyibPayService;
@@ -117,6 +118,9 @@ class PaymentController extends Controller
 
             // Send email notification to staff
             $this->notifyStaffPaymentReceived($booking);
+
+            // Send booking confirmation email to user
+            Mail::to($booking->contact_email)->send(new BookingConfirmationMail($booking, $booking->contact_name));
         }
 
         return redirect()->route('bookings')->with('success', 'Payment submitted successfully! Your booking is confirmed.');
@@ -227,6 +231,9 @@ class PaymentController extends Controller
 
                 $this->generateReceipt($booking);
                 $this->notifyStaffPaymentReceived($booking);
+
+                // Send booking confirmation email to user
+                Mail::to($booking->contact_email)->send(new BookingConfirmationMail($booking, $booking->contact_name));
             }
 
             return redirect()->route('bookings')->with('success', 'Payment successful! Your booking is confirmed.');
@@ -282,6 +289,9 @@ class PaymentController extends Controller
 
             $this->generateReceipt($booking);
             $this->notifyStaffPaymentReceived($booking);
+
+            // Send booking confirmation email to user
+            Mail::to($booking->contact_email)->send(new BookingConfirmationMail($booking, $booking->contact_name));
 
             Log::info('ToyyibPay payment processed successfully', ['booking_id' => $booking->id]);
         }

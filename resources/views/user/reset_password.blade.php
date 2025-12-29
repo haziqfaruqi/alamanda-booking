@@ -1,5 +1,5 @@
 @extends('layouts.app', [
-    'title' => 'Login - Alamanda Houseboat',
+    'title' => 'Reset Password - Alamanda Houseboat',
     'header' => [
         'links' => [
             'Home' => '/home',
@@ -11,19 +11,19 @@
 @section('content')
     <div class="min-h-screen flex items-center justify-center px-6 py-24">
         <div class="w-full max-w-md">
-            <!-- Login Card -->
+            <!-- Reset Password Card -->
             <div class="bg-white rounded-3xl p-8 md:p-10 shadow-lg border border-zinc-200">
                 <!-- Header -->
                 <div class="text-center mb-8">
                     <img src="{{ asset('storage/pic/logo_alamanda.png') }}" alt="Alamanda Logo" class="w-20 h-20 mx-auto mb-4">
-                    <h1 class="text-2xl font-bold text-zinc-900 mb-2">Welcome Back</h1>
-                    <p class="text-zinc-500">Sign in to your account</p>
+                    <h1 class="text-2xl font-bold text-zinc-900 mb-2">Reset Password</h1>
+                    <p class="text-zinc-500">Create a new password for your account</p>
                 </div>
 
-                @if(request()->get('redirect') == 'booking')
-                <div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm flex items-center gap-3">
-                    <iconify-icon icon="lucide:lock" width="18" class="text-amber-600"></iconify-icon>
-                    <span class="text-amber-700">Please login first to make a booking</span>
+                @if(session('status'))
+                <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-sm flex items-center gap-3">
+                    <iconify-icon icon="lucide:check-circle" width="18" class="text-emerald-600"></iconify-icon>
+                    <span class="text-emerald-700">{{ session('status') }}</span>
                 </div>
                 @endif
 
@@ -34,15 +34,8 @@
                 </div>
                 @endif
 
-                @if(session('status'))
-                <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-sm flex items-center gap-3">
-                    <iconify-icon icon="lucide:check-circle" width="18" class="text-emerald-600"></iconify-icon>
-                    <span class="text-emerald-700">{{ session('status') }}</span>
-                </div>
-                @endif
-
-                <!-- Login Form -->
-                <form method="POST" action="{{ url('/login') }}">
+                <!-- Reset Password Form -->
+                <form method="POST" action="{{ route('password.update') }}">
                     @csrf
 
                     <!-- Email -->
@@ -53,34 +46,45 @@
                             placeholder="your@email.com">
                     </div>
 
-                    <!-- Password -->
+                    <!-- New Password -->
                     <div class="mb-5">
-                        <label class="block text-sm font-medium text-zinc-700 mb-2">Password</label>
+                        <label class="block text-sm font-medium text-zinc-700 mb-2">New Password</label>
                         <div class="relative">
-                            <input id="password" name="password" type="password" required
+                            <input id="password" name="password" type="password" required minlength="6"
                                 class="w-full px-4 py-3 pr-12 border border-zinc-300 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
-                                placeholder="Enter your password">
+                                placeholder="Enter new password">
                             <button type="button" onclick="togglePassword()" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600">
                                 <iconify-icon icon="lucide:eye" width="20"></iconify-icon>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Forgot Password -->
-                    <div class="mb-6 text-right">
-                        <a href="{{ route('forgot-password') }}" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">Forgot Password?</a>
+                    <!-- Confirm Password -->
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-zinc-700 mb-2">Confirm Password</label>
+                        <div class="relative">
+                            <input id="password_confirmation" name="password_confirmation" type="password" required minlength="6"
+                                class="w-full px-4 py-3 pr-12 border border-zinc-300 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                                placeholder="Confirm new password">
+                            <button type="button" onclick="toggleConfirmPassword()" class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600">
+                                <iconify-icon icon="lucide:eye" width="20"></iconify-icon>
+                            </button>
+                        </div>
                     </div>
+
+                    <!-- Hidden Token -->
+                    <input type="hidden" name="token" value="{{ $token }}">
 
                     <!-- Submit Button -->
                     <button type="submit" class="w-full py-3 bg-zinc-900 text-white rounded-xl font-semibold hover:bg-zinc-800 transition-all hover:-translate-y-0.5">
-                        Sign In
+                        Reset Password
                     </button>
                 </form>
 
-                <!-- Register Link -->
+                <!-- Back to Login -->
                 <p class="text-center mt-6 text-sm text-zinc-500">
-                    Don't have an account?
-                    <a href="{{ url('/register') }}" class="text-indigo-600 hover:text-indigo-700 font-semibold ml-1">Sign Up</a>
+                    Remember your password?
+                    <a href="{{ route('login') }}" class="text-indigo-600 hover:text-indigo-700 font-semibold ml-1">Sign In</a>
                 </p>
             </div>
         </div>
@@ -92,6 +96,18 @@
 function togglePassword() {
     const p = document.getElementById("password");
     const icon = document.querySelector("#password + button iconify-icon");
+    if (p.type === "password") {
+        p.type = "text";
+        icon.setAttribute('icon', 'lucide:eye-off');
+    } else {
+        p.type = "password";
+        icon.setAttribute('icon', 'lucide:eye');
+    }
+}
+
+function toggleConfirmPassword() {
+    const p = document.getElementById("password_confirmation");
+    const icon = document.querySelector("#password_confirmation + button iconify-icon");
     if (p.type === "password") {
         p.type = "text";
         icon.setAttribute('icon', 'lucide:eye-off');

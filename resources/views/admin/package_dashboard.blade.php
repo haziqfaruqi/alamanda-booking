@@ -78,11 +78,11 @@ body{
   <!-- HEADER -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold">Package Management</h4>
-    <button class="btn btn-primary"
+    {{-- <button class="btn btn-primary"
       data-bs-toggle="modal"
       data-bs-target="#addPackageModal">
       + Add Package
-    </button>
+    </button> --}}
   </div>
 
   <!-- SUCCESS MESSAGE -->
@@ -153,10 +153,10 @@ body{
 <div class="modal fade" id="addPackageModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header">
+      {{-- <div class="modal-header">
         <h5 class="modal-title">Add New Package</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
+      </div> --}}
 
       <form method="POST" action="{{ route('admin.packages.store') }}">
         @csrf
@@ -203,10 +203,10 @@ body{
           </div>
         </div>
 
-        <div class="modal-footer">
+        {{-- <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-primary">Add Package</button>
-        </div>
+        </div> --}}
       </form>
     </div>
   </div>

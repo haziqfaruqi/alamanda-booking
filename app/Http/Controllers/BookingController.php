@@ -39,19 +39,33 @@ class BookingController extends Controller
             'total_children' => 'nullable|integer|min:0',
             'guests' => 'required|array|min:1|max:30',
             'guests.*.name' => 'required|string|max:255',
-            'guests.*.ic' => 'required|string|max:20',
+            'guests.*.id_type' => 'required|in:ic,passport',
+            'guests.*.id_number' => 'required|string|max:50',
+            'guests.*.date_of_birth' => 'nullable|date|before:today',
+            'guests.*.age' => 'nullable|integer|min:0|max:150',
             'coupon_code' => 'nullable|string|max:50',
         ], [
-            'guests.*.ic.required' => 'Guest IC is required.',
+            'guests.*.id_type.required' => 'ID type is required.',
+            'guests.*.id_number.required' => 'ID number is required.',
+            'guests.*.date_of_birth.required' => 'Date of birth is required for passport holders.',
         ]);
 
-        // Check for duplicate ICs within the same booking
-        $icNumbers = array_column($validated['guests'], 'ic');
-        $duplicateIcs = array_filter(array_count_values($icNumbers), fn($count) => $count > 1);
+        // Custom validation: DOB is required for passport holders
+        foreach ($request->input('guests', []) as $index => $guest) {
+            if (($guest['id_type'] ?? '') === 'passport' && empty($guest['date_of_birth'])) {
+                return back()->withInput()->withErrors([
+                    "guests.{$index}.date_of_birth" => 'Date of birth is required for passport holders.'
+                ]);
+            }
+        }
 
-        if (!empty($duplicateIcs)) {
+        // Check for duplicate ID numbers within the same booking
+        $idNumbers = array_column($validated['guests'], 'id_number');
+        $duplicateIds = array_filter(array_count_values($idNumbers), fn($count) => $count > 1);
+
+        if (!empty($duplicateIds)) {
             return back()->withInput()->withErrors([
-                'error' => 'Duplicate IC numbers detected within this booking: ' . implode(', ', array_keys($duplicateIcs)) . '. Each guest must have a unique IC number.'
+                'error' => 'Duplicate ID numbers detected within this booking: ' . implode(', ', array_keys($duplicateIds)) . '. Each guest must have a unique ID number.'
             ]);
         }
 
@@ -112,11 +126,24 @@ class BookingController extends Controller
 
             // Create guests
             foreach ($validated['guests'] as $guestData) {
+                // Determine guest type based on age (if provided)
+                $guestAge = $guestData['age'] ?? null;
+                $guestType = 'adult'; // default to adult
+
+                if ($guestAge !== null) {
+                    // Consider 12 and below as child
+                    $guestType = $guestAge <= 12 ? 'child' : 'adult';
+                }
+
                 Guest::create([
                     'booking_id' => $booking->id,
                     'guest_name' => $guestData['name'],
-                    'guest_ic' => $guestData['ic'],
-                    'guest_type' => 'adult',
+                    'guest_ic' => $guestData['id_type'] === 'ic' ? $guestData['id_number'] : null,
+                    'id_type' => $guestData['id_type'],
+                    'id_number' => $guestData['id_number'],
+                    'guest_type' => $guestType,
+                    'age' => $guestAge,
+                    'date_of_birth' => $guestData['date_of_birth'] ?? null,
                 ]);
             }
 
@@ -176,9 +203,9 @@ class BookingController extends Controller
     public function index()
     {
         $bookings = auth()->user()->bookings()
-            ->with(['package', 'guests'])
+            ->with(['package', 'guests', 'review'])
             ->latest()
-            ->get();
+            ->paginate(10);
         return view('user.view_booking', compact('bookings'));
     }
 

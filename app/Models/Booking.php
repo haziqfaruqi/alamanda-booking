@@ -41,6 +41,7 @@ class Booking extends Model
         'contact_email',
         'confirmed_at',
         'cancelled_at',
+        'reminder_sent_at',
     ];
 
     /**
@@ -56,6 +57,7 @@ class Booking extends Model
         'discount_amount' => 'decimal:2',
         'confirmed_at' => 'datetime',
         'cancelled_at' => 'datetime',
+        'reminder_sent_at' => 'datetime',
     ];
 
     /**
