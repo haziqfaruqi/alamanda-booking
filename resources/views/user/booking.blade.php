@@ -539,16 +539,17 @@
     function validateGuests() {
         let filled = 0;
         document.querySelectorAll(".guest-form-item").forEach(g => {
+            // Check visible inputs only (name, id_type, id_number)
+            // For IC holders: name, id_type (ic), id_number are required
+            // For passport holders: name, id_type (passport), id_number, date_of_birth are required
             const inputs = g.querySelectorAll("input:not(.hidden), select:not(.hidden)");
-            const hiddenInputs = g.querySelectorAll("input[type='hidden']");
             let allFilled = true;
             inputs.forEach(i => {
-                if (!i.value || i.value.trim() === "") {
-                    allFilled = false;
+                // Skip validation for date_of_birth if it's hidden (IC holders)
+                if (i.classList.contains('hidden') || i.closest('.hidden')) {
+                    return;
                 }
-            });
-            hiddenInputs.forEach(i => {
-                if (i.name.includes('[age]') && (!i.value || i.value.trim() === "")) {
+                if (!i.value || i.value.trim() === "") {
                     allFilled = false;
                 }
             });

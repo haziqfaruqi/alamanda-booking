@@ -236,6 +236,20 @@ class PaymentController extends Controller
                 Mail::to($booking->contact_email)->send(new BookingConfirmationMail($booking, $booking->contact_name));
             }
 
+            // Add to Google Calendar (do this even if already paid, in case event was missed)
+            try {
+                $calendarService = app(\App\Services\GoogleCalendarService::class);
+                $calendarService->createBookingEvent([
+                    'title' => "Houseboat Booking - {$booking->contact_name} ({$booking->total_guests} pax)",
+                    'description' => "Package: {$booking->package->name}\nContact: {$booking->contact_phone}\nEmail: {$booking->contact_email}\nPayment: ToyyibPay ({$billCode})",
+                    'start_date' => $booking->check_in_date,
+                    'end_date' => $booking->check_out_date,
+                    'booking_id' => $booking->id,
+                ]);
+            } catch (\Exception $e) {
+                Log::warning('Failed to create calendar event after payment: ' . $e->getMessage());
+            }
+
             return redirect()->route('bookings')->with('success', 'Payment successful! Your booking is confirmed.');
         }
 
@@ -292,6 +306,20 @@ class PaymentController extends Controller
 
             // Send booking confirmation email to user
             Mail::to($booking->contact_email)->send(new BookingConfirmationMail($booking, $booking->contact_name));
+
+            // Add to Google Calendar
+            try {
+                $calendarService = app(\App\Services\GoogleCalendarService::class);
+                $calendarService->createBookingEvent([
+                    'title' => "Houseboat Booking - {$booking->contact_name} ({$booking->total_guests} pax)",
+                    'description' => "Package: {$booking->package->name}\nContact: {$booking->contact_phone}\nEmail: {$booking->contact_email}\nPayment: ToyyibPay ({$billCode})",
+                    'start_date' => $booking->check_in_date,
+                    'end_date' => $booking->check_out_date,
+                    'booking_id' => $booking->id,
+                ]);
+            } catch (\Exception $e) {
+                Log::warning('Failed to create calendar event: ' . $e->getMessage());
+            }
 
             Log::info('ToyyibPay payment processed successfully', ['booking_id' => $booking->id]);
         }

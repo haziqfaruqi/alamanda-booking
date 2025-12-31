@@ -3,235 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Booking Confirmed</title>
-    <style>
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f4f4f7;
-            margin: 0;
-            padding: 20px;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-        }
-        .header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            padding: 40px 30px;
-            text-align: center;
-        }
-        .success-icon {
-            width: 60px;
-            height: 60px;
-            background: #10b981;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-center;
-            margin: 0 auto 16px;
-        }
-        .content {
-            padding: 40px 30px;
-        }
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1f2937;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #f59e0b;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #f3f4f6;
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .detail-label {
-            color: #6b7280;
-            font-size: 14px;
-        }
-        .detail-value {
-            font-weight: 600;
-            color: #1f2937;
-            font-size: 14px;
-            text-align: right;
-        }
-        .total-section {
-            background: #fef3c7;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-        }
-        .total-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .total-amount {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1f2937;
-        }
-        .status-badge {
-            display: inline-block;
-            padding: 6px 16px;
-            background: #d1fae5;
-            color: #065f46;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-        .footer {
-            background-color: #f9fafb;
-            padding: 24px 30px;
-            text-align: center;
-            color: #9ca3af;
-            font-size: 14px;
-        }
-        .guest-list {
-            margin-top: 8px;
-        }
-        .guest-item {
-            padding: 8px 0;
-            font-size: 14px;
-            color: #4b5563;
-        }
-        .contact-info {
-            background: #eff6ff;
-            border-radius: 12px;
-            padding: 16px;
-            margin: 20px 0;
-        }
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #1e40af;
-        }
-        .contact-item:last-child {
-            margin-bottom: 0;
-        }
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    <style type="text/css">
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        table { border-collapse: collapse !important; }
+        body { height: 100% !important; margin: 0 !important; padding: 0 !important; width: 100% !important; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="success-icon" style="display: flex; align-items: center; justify-content: center;">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-            </div>
-            <h1 style="color: #ffffff; margin: 0 0 8px 0; font-size: 28px; font-weight: 700;">Booking Confirmed!</h1>
-            <p style="color: #94a3b8; margin: 0;">Your Alamanda Houseboat adventure awaits</p>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
-            <p>Hi {{ $userName ?? 'there' }},</p>
-            <p style="color: #6b7280;">Great news! Your booking has been confirmed and payment received. Here are your booking details:</p>
-
-            <!-- Booking Reference -->
-            <div style="text-align: center; margin: 24px 0;">
-                <p style="color: #6b7280; font-size: 14px; margin: 0 0 8px 0;">Booking Reference</p>
-                <p style="font-size: 24px; font-weight: 700; color: #1f2937; margin: 0;">#ALM-{{ str_pad($booking->id, 4, '0', STR_PAD_LEFT) }}</p>
-                <span class="status-badge">{{ strtoupper($booking->status) }}</span>
-            </div>
-
-            <!-- Package Details -->
-            <div class="section-title">Package Details</div>
-            <div class="detail-row">
-                <span class="detail-label">Package</span>
-                <span class="detail-value">{{ $booking->package->name ?? 'N/A' }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Duration</span>
-                <span class="detail-value">{{ $booking->duration }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Check-in Date</span>
-                <span class="detail-value">{{ \Carbon\Carbon::parse($booking->check_in_date)->format('d M Y (l') }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Check-out Date</span>
-                <span class="detail-value">{{ \Carbon\Carbon::parse($booking->check_out_date)->format('d M Y (l') }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="detail-label">Guests</span>
-                <span class="detail-value">{{ $booking->total_guests }} pax</span>
-            </div>
-
-            @if($booking->guests && $booking->guests->count() > 0)
-            <div class="section-title" style="margin-top: 24px;">Guest Information</div>
-            <div class="guest-list">
-                @foreach($booking->guests as $guest)
-                <div class="guest-item">
-                    <strong>{{ $guest->guest_name }}</strong>
-                    @if($guest->id_number)
-                    - {{ $guest->id_type === 'passport' ? 'Passport' : 'IC' }}: {{ $guest->id_number }}
-                    @endif
-                    @if($guest->age)
-                    - {{ $guest->age }} years old
-                    @endif
-                </div>
-                @endforeach
-            </div>
-            @endif
-
-            <!-- Payment Summary -->
-            <div class="total-section">
-                <div class="total-row">
-                    <span style="color: #92400e; font-weight: 600;">Total Amount Paid</span>
-                    <span class="total-amount">RM {{ number_format($booking->total_price, 0, ',', ',') }}</span>
-                </div>
-                @if($booking->discount_amount > 0)
-                <p style="font-size: 13px; color: #92400e; margin: 8px 0 0 0;">
-                    (Discount applied: RM {{ number_format($booking->discount_amount, 0, ',', ',') }})
-                </p>
-                @endif
-            </div>
-
-            <!-- Contact Information -->
-            <div class="contact-info">
-                <p style="margin: 0 0 12px 0; font-weight: 600; color: #1e40af;">Need to contact us?</p>
-                <div class="contact-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                    </svg>
-                    +60 12-345 6789
-                </div>
-                <div class="contact-item">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                        <polyline points="22,6 12,13 2,6"></polyline>
-                    </svg>
-                    alamandahousebot@gmail.com
-                </div>
-            </div>
-
-            <p style="color: #6b7280; font-size: 14px; margin-top: 24px; text-align: center;">
-                We look forward to welcoming you aboard Alamanda Houseboat!
-            </p>
-        </div>
-
-        <!-- Footer -->
-        <div class="footer">
-            <p>&copy; {{ date('Y') }} Alamanda Houseboat. All rights reserved.</p>
-            <p style="margin: 8px 0 0 0;">
-                <a href="mailto:alamandahousebot@gmail.com" style="color: #9ca3af; text-decoration: none;">alamandahousebot@gmail.com</a>
-            </p>
-        </div>
+<body style="margin: 0; padding: 0; background-color: #f4f4f7;">
+    <!-- Preview Text -->
+    <div style="display: none; max-height: 0; overflow: hidden;">
+        Your Alamanda Houseboat booking has been confirmed!
     </div>
+
+    <!-- Email Container -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f4f4f7; padding: 20px 0;">
+        <tr>
+            <td align="center">
+                <!-- Main Content Table -->
+                <table border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+
+                    <!-- Header -->
+                    <tr>
+                        <td style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 40px 30px; text-align: center;">
+                            <!-- Success Icon -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="60" style="margin: 0 auto 16px;">
+                                <tr>
+                                    <td align="center" style="background-color: #10b981; width: 60px; height: 60px; border-radius: 50%; line-height: 60px;">
+                                        <span style="color: #ffffff; font-size: 24px;">&checkmark;</span>
+                                    </td>
+                                </tr>
+                            </table>
+                            <h1 style="color: #ffffff; margin: 0 0 8px 0; font-size: 28px; font-weight: 700;">Booking Confirmed!</h1>
+                            <p style="color: #94a3b8; margin: 0; font-size: 14px;">Your Alamanda Houseboat adventure awaits</p>
+                        </td>
+                    </tr>
+
+                    <!-- Content -->
+                    <tr>
+                        <td style="padding: 40px 30px;">
+                            <p style="margin: 0 0 10px 0; color: #1f2937;">Hi {{ $userName ?? 'there' }},</p>
+                            <p style="margin: 0 0 24px 0; color: #6b7280; font-size: 14px;">Great news! Your booking has been confirmed and payment received. Here are your booking details:</p>
+
+                            <!-- Booking Reference -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 24px;">
+                                <tr>
+                                    <td align="center" style="padding: 20px 0; border-bottom: 1px solid #f3f4f6;">
+                                        <p style="color: #6b7280; font-size: 14px; margin: 0 0 8px 0;">Booking Reference</p>
+                                        <p style="font-size: 24px; font-weight: 700; color: #1f2937; margin: 0 0 12px 0;">#ALM-{{ str_pad($booking->id, 4, '0', STR_PAD_LEFT) }}</p>
+                                        <span style="display: inline-block; padding: 6px 16px; background-color: #d1fae5; color: #065f46; border-radius: 20px; font-size: 13px; font-weight: 600;">{{ strtoupper($booking->status) }}</span>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Package Details -->
+                            <p style="margin: 0 0 12px 0; font-size: 18px; font-weight: 600; color: #1f2937; border-bottom: 2px solid #f59e0b; padding-bottom: 8px; display: inline-block;">Package Details</p>
+
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 20px;">
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #f3f4f6;">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td style="color: #6b7280; font-size: 14px;">Package</td>
+                                                <td align="right" style="font-weight: 600; color: #1f2937; font-size: 14px;">{{ $booking->package->name ?? 'N/A' }}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #f3f4f6;">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td style="color: #6b7280; font-size: 14px;">Duration</td>
+                                                <td align="right" style="font-weight: 600; color: #1f2937; font-size: 14px;">{{ $booking->duration }}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #f3f4f6;">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td style="color: #6b7280; font-size: 14px;">Check-in Date</td>
+                                                <td align="right" style="font-weight: 600; color: #1f2937; font-size: 14px;">{{ \Carbon\Carbon::parse($booking->check_in_date)->format('d M Y (l') }}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0; border-bottom: 1px solid #f3f4f6;">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td style="color: #6b7280; font-size: 14px;">Check-out Date</td>
+                                                <td align="right" style="font-weight: 600; color: #1f2937; font-size: 14px;">{{ \Carbon\Carbon::parse($booking->check_out_date)->format('d M Y (l') }}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 12px 0;">
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td style="color: #6b7280; font-size: 14px;">Guests</td>
+                                                <td align="right" style="font-weight: 600; color: #1f2937; font-size: 14px;">{{ $booking->total_guests }} pax</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            @if($booking->guests && $booking->guests->count() > 0)
+                            <!-- Guest Information -->
+                            <p style="margin: 24px 0 12px 0; font-size: 18px; font-weight: 600; color: #1f2937; border-bottom: 2px solid #f59e0b; padding-bottom: 8px; display: inline-block;">Guest Information</p>
+
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 20px; background-color: #f9fafb; border-radius: 12px;">
+                                @foreach($booking->guests as $guest)
+                                <tr>
+                                    <td style="padding: 10px 16px; border-bottom: 1px solid #e5e7eb; {{ $loop->last ? 'border-bottom: none;' : '' }}">
+                                        <span style="font-weight: 600; color: #1f2937; font-size: 14px;">{{ $guest->guest_name }}</span>
+                                        @if($guest->id_number)
+                                        <span style="color: #6b7280; font-size: 13px;"> - {{ $guest->id_type === 'passport' ? 'Passport' : 'IC' }}: {{ $guest->id_number }}</span>
+                                        @endif
+                                        @if($guest->age)
+                                        <span style="color: #6b7280; font-size: 13px;"> - {{ $guest->age }} years old</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                @endforeach
+                            </table>
+                            @endif
+
+                            <!-- Payment Summary -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fef3c7; border-radius: 12px; padding: 20px; margin-top: 20px;">
+                                <tr>
+                                    <td>
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td style="color: #92400e; font-weight: 600; font-size: 14px;">Total Amount Paid</td>
+                                                <td align="right" style="font-size: 24px; font-weight: 700; color: #1f2937;">RM {{ number_format($booking->total_price, 0, ',', ',') }}</td>
+                                            </tr>
+                                        </table>
+                                        @if($booking->discount_amount > 0)
+                                        <p style="font-size: 13px; color: #92400e; margin: 8px 0 0 0;">
+                                            (Discount applied: RM {{ number_format($booking->discount_amount, 0, ',', ',') }})
+                                        </p>
+                                        @endif
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Contact Information -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #eff6ff; border-radius: 12px; padding: 16px; margin: 20px 0;">
+                                <tr>
+                                    <td>
+                                        <p style="margin: 0 0 12px 0; font-weight: 600; color: #1e40af; font-size: 14px;">Need to contact us?</p>
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td style="padding: 4px 0; color: #1e40af; font-size: 14px;">&#9742; +60 12-345 6789</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="padding: 4px 0; color: #1e40af; font-size: 14px;">&#9993; alamandahousebot@gmail.com</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <p style="color: #6b7280; font-size: 14px; margin: 24px 0 0 0; text-align: center;">
+                                We look forward to welcoming you aboard Alamanda Houseboat!
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="background-color: #f9fafb; padding: 24px 30px; text-align: center;">
+                            <p style="color: #9ca3af; font-size: 14px; margin: 0;">&copy; {{ date('Y') }} Alamanda Houseboat. All rights reserved.</p>
+                            <p style="margin: 8px 0 0 0;">
+                                <a href="mailto:alamandahousebot@gmail.com" style="color: #9ca3af; text-decoration: none; font-size: 14px;">alamandahousebot@gmail.com</a>
+                            </p>
+                        </td>
+                    </tr>
+
+                </table>
+                <!-- End Main Content Table -->
+            </td>
+        </tr>
+    </table>
+    <!-- End Email Container -->
 </body>
 </html>
