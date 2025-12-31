@@ -28,8 +28,13 @@ class ReportController extends Controller
             ->pluck('year')
             ->toArray();
 
+        // Always include 2026
+        if (!in_array(2026, $years)) {
+            array_unshift($years, 2026);
+        }
+
         if (empty($years)) {
-            $years = [date('Y')];
+            $years = [2026];
         }
 
         return view('admin.generate_report', compact('reportTypes', 'years'));

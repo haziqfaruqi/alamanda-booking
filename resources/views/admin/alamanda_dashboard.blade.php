@@ -176,8 +176,8 @@ body{
             <div class="d-flex justify-content-between mb-3">
               <h5 class="fw-bold">Revenue Overview</h5>
               <select class="form-select w-auto" id="chartPeriod">
-                <option value="2024">2024</option>
-                <option value="2025" selected>2025</option>
+                <option value="2025">2025</option>
+                <option value="2026" selected>2026</option>
               </select>
             </div>
 
@@ -230,21 +230,21 @@ body{
 <script>
 // Chart data from server - organized by year
 const chartDataByYear = {
-  '2024': {
-    labels: @js($chartData2024['labels'] ?? []),
-    revenue: @js($chartData2024['revenue'] ?? []),
-    bookings: @js($chartData2024['bookings'] ?? [])
-  },
   '2025': {
     labels: @js($chartData2025['labels'] ?? []),
     revenue: @js($chartData2025['revenue'] ?? []),
     bookings: @js($chartData2025['bookings'] ?? [])
+  },
+  '2026': {
+    labels: @js($chartData2026['labels'] ?? []),
+    revenue: @js($chartData2026['revenue'] ?? []),
+    bookings: @js($chartData2026['bookings'] ?? [])
   }
 };
 
 // Revenue Chart
 const ctx = document.getElementById('revenueChart').getContext('2d');
-let currentYear = '2025';
+let currentYear = '2026';
 
 const revenueChart = new Chart(ctx, {
   type: 'line',

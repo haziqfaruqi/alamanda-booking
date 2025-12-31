@@ -86,10 +86,9 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
-        // Generate monthly data for current year (2025) and previous year (2024)
-        $currentYear = now()->year;
-        $chartData2024 = $this->getYearlyData(2024);
-        $chartData2025 = $this->getYearlyData($currentYear);
+        // Generate monthly data for 2025 and 2026
+        $chartData2025 = $this->getYearlyData(2025);
+        $chartData2026 = $this->getYearlyData(2026);
 
         return view('admin.alamanda_dashboard', compact(
             'totalRevenue',
@@ -102,8 +101,8 @@ class DashboardController extends Controller
             'reviewsGrowth',
             'recentBookings',
             'recentUsers',
-            'chartData2024',
-            'chartData2025'
+            'chartData2025',
+            'chartData2026'
         ));
     }
 
