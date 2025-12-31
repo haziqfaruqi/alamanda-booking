@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Guest;
 use App\Models\Package;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -78,7 +79,7 @@ class ReportController extends Controller
     private function getReportHeaders($reportType)
     {
         $headers = [
-            'bookings' => ['ID', 'Contact Name', 'Email', 'Phone', 'Package', 'Check-In', 'Check-Out', 'Adults', 'Children', 'Total Price', 'Status', 'Payment Status', 'Booking Date'],
+            'bookings' => ['ID', 'Contact Name', 'Email', 'Phone', 'Package', 'Check-In', 'Check-Out', 'Adults', 'Children', 'Guest Names', 'Total Price', 'Status', 'Payment Status', 'Booking Date'],
             'revenue' => ['ID', 'Contact Name', 'Package', 'Check-In Date', 'Total Price', 'Payment Status', 'Booking Date'],
             'packages' => ['ID', 'Package Name', 'Duration', 'Standard Price', 'Full Board Adult', 'Full Board Child', 'Active', 'Created Date'],
         ];
@@ -92,7 +93,7 @@ class ReportController extends Controller
     private function getReportData($reportType, $month, $year)
     {
         $query = match($reportType) {
-            'bookings' => Booking::with('package'),
+            'bookings' => Booking::with(['package', 'guests']),
             'revenue' => Booking::with('package')->where('payment_status', 'paid'),
             'packages' => Package::query(),
         };
@@ -127,6 +128,7 @@ class ReportController extends Controller
                     $record->check_out_date->format('d M Y'),
                     $record->total_adults,
                     $record->total_children ?? 0,
+                    $record->guests->pluck('guest_name')->implode(', '),
                     $record->total_price,
                     ucfirst($record->status),
                     ucfirst($record->payment_status),
