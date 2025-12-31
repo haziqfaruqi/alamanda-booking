@@ -178,8 +178,12 @@
                 @foreach($booking->guests as $guest)
                 <div class="guest-item">
                     <strong>{{ $guest->guest_name }}</strong>
-                    @if($guest->id_number) - {{ $guest->id_type === 'passport' ? 'Passport' : 'IC' }}: {{ $guest->id_number }}@endif
-                    @if($guest->age) - {{ $guest->age }} years old@endif
+                    @if($guest->id_number)
+                    - {{ $guest->id_type === 'passport' ? 'Passport' : 'IC' }}: {{ $guest->id_number }}
+                    @endif
+                    @if($guest->age)
+                    - {{ $guest->age }} years old
+                    @endif
                 </div>
                 @endforeach
             </div>
