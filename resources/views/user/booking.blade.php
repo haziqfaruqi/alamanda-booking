@@ -539,10 +539,16 @@
     function validateGuests() {
         let filled = 0;
         document.querySelectorAll(".guest-form-item").forEach(g => {
-            const inputs = g.querySelectorAll("input, select");
+            const inputs = g.querySelectorAll("input:not(.hidden), select:not(.hidden)");
+            const hiddenInputs = g.querySelectorAll("input[type='hidden']");
             let allFilled = true;
             inputs.forEach(i => {
                 if (!i.value || i.value.trim() === "") {
+                    allFilled = false;
+                }
+            });
+            hiddenInputs.forEach(i => {
+                if (i.name.includes('[age]') && (!i.value || i.value.trim() === "")) {
                     allFilled = false;
                 }
             });
