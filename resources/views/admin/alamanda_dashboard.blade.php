@@ -40,7 +40,6 @@ body{
 }
 
 .kpi small{
-  color:#16a34a;
   font-weight:600;
 }
 
@@ -130,7 +129,9 @@ body{
           <div class="card p-4 kpi">
             <h6 class="text-muted">Total Revenue</h6>
             <h3 class="fw-bold">RM {{ number_format($totalRevenue ?? 0, 0) }}</h3>
-            <small>▲ 1.56%</small>
+            <small class="{{ $revenueGrowth >= 0 ? 'text-success' : 'text-danger' }}">
+              {{ $revenueGrowth >= 0 ? '▲' : '▼' }} {{ number_format(abs($revenueGrowth), 2) }}%
+            </small>
           </div>
         </div>
 
@@ -138,7 +139,9 @@ body{
           <div class="card p-4 kpi">
             <h6 class="text-muted">Total Bookings</h6>
             <h3 class="fw-bold">{{ $totalBookings ?? 0 }}</h3>
-            <small>▲ 1.56%</small>
+            <small class="{{ $bookingsGrowth >= 0 ? 'text-success' : 'text-danger' }}">
+              {{ $bookingsGrowth >= 0 ? '▲' : '▼' }} {{ number_format(abs($bookingsGrowth), 2) }}%
+            </small>
           </div>
         </div>
 
@@ -146,7 +149,9 @@ body{
           <div class="card p-4 kpi">
             <h6 class="text-muted">Customers</h6>
             <h3 class="fw-bold">{{ $totalCustomers ?? 0 }}</h3>
-            <small>▲ 1.56%</small>
+            <small class="{{ $customersGrowth >= 0 ? 'text-success' : 'text-danger' }}">
+              {{ $customersGrowth >= 0 ? '▲' : '▼' }} {{ number_format(abs($customersGrowth), 2) }}%
+            </small>
           </div>
         </div>
 
@@ -154,7 +159,9 @@ body{
           <div class="card p-4 kpi">
             <h6 class="text-muted">Reviews</h6>
             <h3 class="fw-bold">{{ $totalReviews ?? 0 }}</h3>
-            <small>▲ 1.56%</small>
+            <small class="{{ $reviewsGrowth >= 0 ? 'text-success' : 'text-danger' }}">
+              {{ $reviewsGrowth >= 0 ? '▲' : '▼' }} {{ number_format(abs($reviewsGrowth), 2) }}%
+            </small>
           </div>
         </div>
 
@@ -169,8 +176,8 @@ body{
             <div class="d-flex justify-content-between mb-3">
               <h5 class="fw-bold">Revenue Overview</h5>
               <select class="form-select w-auto" id="chartPeriod">
-                <option value="yearly">Yearly</option>
-                <option value="monthly" selected>Monthly</option>
+                <option value="2024">2024</option>
+                <option value="2025" selected>2025</option>
               </select>
             </div>
 
@@ -221,21 +228,32 @@ body{
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// Chart data from server
-const chartLabels = @js($chartLabels ?? []);
-const revenueData = @js($revenueData ?? []);
-const bookingsData = @js($bookingsData ?? []);
+// Chart data from server - organized by year
+const chartDataByYear = {
+  '2024': {
+    labels: @js($chartData2024['labels'] ?? []),
+    revenue: @js($chartData2024['revenue'] ?? []),
+    bookings: @js($chartData2024['bookings'] ?? [])
+  },
+  '2025': {
+    labels: @js($chartData2025['labels'] ?? []),
+    revenue: @js($chartData2025['revenue'] ?? []),
+    bookings: @js($chartData2025['bookings'] ?? [])
+  }
+};
 
 // Revenue Chart
 const ctx = document.getElementById('revenueChart').getContext('2d');
+let currentYear = '2025';
+
 const revenueChart = new Chart(ctx, {
   type: 'line',
   data: {
-    labels: chartLabels,
+    labels: chartDataByYear[currentYear].labels,
     datasets: [
       {
         label: 'Revenue (RM)',
-        data: revenueData,
+        data: chartDataByYear[currentYear].revenue,
         borderColor: '#4f46e5',
         backgroundColor: 'rgba(79, 70, 229, 0.1)',
         borderWidth: 3,
@@ -245,7 +263,7 @@ const revenueChart = new Chart(ctx, {
       },
       {
         label: 'Bookings',
-        data: bookingsData,
+        data: chartDataByYear[currentYear].bookings,
         borderColor: '#ff8c32',
         backgroundColor: 'rgba(255, 140, 50, 0.1)',
         borderWidth: 2,
@@ -307,6 +325,15 @@ const revenueChart = new Chart(ctx, {
       }
     }
   }
+});
+
+// Handle year selection change
+document.getElementById('chartPeriod').addEventListener('change', function() {
+  currentYear = this.value;
+  revenueChart.data.labels = chartDataByYear[currentYear].labels;
+  revenueChart.data.datasets[0].data = chartDataByYear[currentYear].revenue;
+  revenueChart.data.datasets[1].data = chartDataByYear[currentYear].bookings;
+  revenueChart.update();
 });
 </script>
 </body>
