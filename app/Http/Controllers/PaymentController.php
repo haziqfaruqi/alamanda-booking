@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\BookingConfirmationMail;
 use App\Mail\PaymentReceivedNotification;
 use App\Models\Booking;
 use App\Services\ToyyibPayService;
@@ -157,6 +156,9 @@ class PaymentController extends Controller
         $result = $toyyibPay->createBill($paymentData);
 
         if ($result['success']) {
+            // Store billcode in booking for fallback lookup
+            $booking->update(['payment_reference' => $result['bill_code']]);
+
             // Store pending payment info in session
             session([
                 'toyyibpay_pending_booking' => $booking->id,
@@ -199,18 +201,23 @@ class PaymentController extends Controller
             'refno' => $refNo,
         ]);
 
-        // Get pending booking from session
+        // Try to get pending booking from session first
         $bookingId = session('toyyibpay_pending_booking');
         $storedBillCode = session('toyyibpay_bill_code');
 
+        // Fallback: find booking by billcode if session is lost
         if (!$bookingId || $storedBillCode !== $billCode) {
-            return redirect()->route('bookings')->with('error', 'Invalid payment session.');
-        }
-
-        $booking = Booking::find($bookingId);
-
-        if (!$booking) {
-            return redirect()->route('bookings')->with('error', 'Booking not found.');
+            $booking = Booking::where('payment_reference', $billCode)->first();
+            if (!$booking) {
+                Log::warning('Booking not found for billcode', ['billcode' => $billCode]);
+                return redirect()->route('bookings')->with('error', 'Booking not found. Please contact support.');
+            }
+            Log::info('Found booking by billcode fallback', ['booking_id' => $booking->id]);
+        } else {
+            $booking = Booking::find($bookingId);
+            if (!$booking) {
+                return redirect()->route('bookings')->with('error', 'Booking not found.');
+            }
         }
 
         // Clear session
@@ -223,7 +230,7 @@ class PaymentController extends Controller
             if ($booking->payment_status !== 'paid') {
                 $booking->update([
                     'payment_method' => 'toyyibpay',
-                    'payment_reference' => $billCode,
+                    // payment_reference is already set when bill was created
                     'payment_status' => 'paid',
                     'status' => 'confirmed',
                     'confirmed_at' => now(),
@@ -231,9 +238,6 @@ class PaymentController extends Controller
 
                 $this->generateReceipt($booking);
                 $this->notifyStaffPaymentReceived($booking);
-
-                // Send booking confirmation email to user
-                Mail::to($booking->contact_email)->send(new BookingConfirmationMail($booking, $booking->contact_name));
             }
 
             // Add to Google Calendar (do this even if already paid, in case event was missed)
@@ -303,9 +307,6 @@ class PaymentController extends Controller
 
             $this->generateReceipt($booking);
             $this->notifyStaffPaymentReceived($booking);
-
-            // Send booking confirmation email to user
-            Mail::to($booking->contact_email)->send(new BookingConfirmationMail($booking, $booking->contact_name));
 
             // Add to Google Calendar
             try {

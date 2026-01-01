@@ -155,7 +155,6 @@
                                     </div>
                                     <div class="flex-1">
                                         <p class="font-semibold text-zinc-900 text-lg">ToyyibPay</p>
-                                        <p class="text-sm text-zinc-500">Multiple payment options - FPX, Credit/Debit Card, Touch 'n Go, GrabPay, Boost</p>
                                     </div>
                                     <div class="w-6 h-6 rounded-full border-2 border-zinc-300 peer-checked:border-teal-500 peer-checked:bg-teal-500 flex items-center justify-center flex-shrink-0">
                                         <iconify-icon icon="lucide:check" width="14" class="text-white opacity-0 peer-checked:opacity-100"></iconify-icon>
@@ -175,12 +174,6 @@
                                         <div class="flex flex-wrap gap-2 mt-3">
                                             <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-white rounded-lg text-xs text-zinc-600">
                                                 <iconify-icon icon="lucide:credit-card" width="14"></iconify-icon> FPX
-                                            </span>
-                                            <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-white rounded-lg text-xs text-zinc-600">
-                                                <iconify-icon icon="lucide:credit-card" width="14"></iconify-icon> Credit/Debit Card
-                                            </span>
-                                            <span class="inline-flex items-center gap-1 px-3 py-1.5 bg-white rounded-lg text-xs text-zinc-600">
-                                                <iconify-icon icon="lucide:wallet" width="14"></iconify-icon> E-Wallets
                                             </span>
                                         </div>
                                     </div>

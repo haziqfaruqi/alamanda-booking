@@ -149,19 +149,7 @@ class BookingController extends Controller
 
             DB::commit();
 
-            // Add to Google Calendar
-            try {
-                $calendarService = app(GoogleCalendarService::class);
-                $calendarService->createBookingEvent([
-                    'title' => "Houseboat Booking - {$validated['contact_name']} ({$booking->total_guests} pax)",
-                    'description' => "Package: {$package->name}\nContact: {$validated['contact_phone']}\nEmail: {$validated['contact_email']}",
-                    'start_date' => $validated['check_in_date'],
-                    'end_date' => $validated['check_out_date'],
-                    'booking_id' => $booking->id,
-                ]);
-            } catch (\Exception $e) {
-                Log::warning('Failed to create calendar event: ' . $e->getMessage());
-            }
+            // Note: Calendar event will be created after payment is completed
 
             return redirect()->route('invoice.show', ['booking' => $booking->id])
                 ->with('success', 'Booking created successfully! Please review your invoice and proceed to payment.');

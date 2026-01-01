@@ -140,13 +140,22 @@ class GoogleCalendarService
             return null;
         }
 
+        // Check if event already exists for this booking to prevent duplicates
+        if (isset($bookingData['booking_id'])) {
+            $existingEvent = $this->getEventByBookingId($bookingData['booking_id']);
+            if ($existingEvent) {
+                logger()->info('Calendar event already exists for booking', ['booking_id' => $bookingData['booking_id'], 'event_id' => $existingEvent->getId()]);
+                return $existingEvent;
+            }
+        }
+
         try {
             $event = new Event();
             $event->setSummary($bookingData['title'] ?? 'Houseboat Booking');
             $event->setDescription($bookingData['description'] ?? '');
 
             $start = new EventDateTime();
-            $start->setDateTime($this->formatDateTime($bookingData['start_date'], '14:00'));
+            $start->setDateTime($this->formatDateTime($bookingData['start_date'], '14:30'));
             $start->setTimeZone('Asia/Kuala_Lumpur');
             $event->setStart($start);
 
@@ -196,7 +205,7 @@ class GoogleCalendarService
 
             if (isset($bookingData['start_date'])) {
                 $start = new EventDateTime();
-                $start->setDateTime($this->formatDateTime($bookingData['start_date'], '14:00'));
+                $start->setDateTime($this->formatDateTime($bookingData['start_date'], '14:30'));
                 $start->setTimeZone('Asia/Kuala_Lumpur');
                 $event->setStart($start);
             }
@@ -275,16 +284,22 @@ class GoogleCalendarService
     /**
      * Format date/time for Google Calendar API
      * Adds default time if only date is provided
-     * Check-in: 2:00 PM (14:00), Check-out: 12:00 PM (noon)
+     * Check-in: 2:30 PM (14:30), Check-out: 12:00 PM (noon)
      */
-    protected function formatDateTime(string $date, string $defaultTime = '14:00'): string
+    protected function formatDateTime(string $date, string $defaultTime = '14:30'): string
     {
-        // Check if the date string already has a time component
-        if (strlen($date) <= 10) {
-            // It's just a date, add the default time
-            $date = $date . ' ' . $defaultTime;
-        }
-        return date('c', strtotime($date)); // ISO 8601 format
+        // If date is a Carbon object or has time component, extract just the date part
+        // Database dates come as "2026-01-05 00:00:00" - we need to strip the time
+        $dateOnly = substr($date, 0, 10); // Get just YYYY-MM-DD
+
+        // Now add our default time
+        $dateWithTime = $dateOnly . ' ' . $defaultTime;
+
+        // Create DateTime in Asia/Kuala_Lumpur timezone to avoid offset issues
+        $dt = new \DateTime($dateWithTime, new \DateTimeZone('Asia/Kuala_Lumpur'));
+        $formatted = $dt->format('c'); // ISO 8601 format with timezone
+        logger()->info('formatDateTime', ['input' => $date, 'dateOnly' => $dateOnly, 'output' => $formatted]);
+        return $formatted;
     }
 
     /**

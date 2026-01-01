@@ -18,7 +18,6 @@
                 <span class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-zinc-500 bg-white border border-zinc-300 rounded-xl">
                     {{ $element }}
                 </span>
-            @endif
 
             {{-- Array Of Links --}}
             @elseif (is_array($element))
