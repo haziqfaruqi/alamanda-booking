@@ -117,6 +117,7 @@ class BookingController extends Controller
                 'original_price' => $totalPrice,
                 'discount_amount' => $discountAmount,
                 'coupon_code' => $appliedCoupon ? $appliedCoupon->code : null,
+                'coupon_id' => $appliedCoupon ? $appliedCoupon->id : null,
                 'status' => 'pending',
                 'payment_status' => 'unpaid',
                 'contact_name' => $validated['contact_name'],

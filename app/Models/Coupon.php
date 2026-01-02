@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Coupon extends Model
 {
@@ -73,5 +74,13 @@ class Coupon extends Model
     public function incrementUsedCount(): void
     {
         $this->increment('used_count');
+    }
+
+    /**
+     * Get all bookings that used this coupon
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
     }
 }

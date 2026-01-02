@@ -30,6 +30,7 @@ class Booking extends Model
         'original_price',
         'discount_amount',
         'coupon_code',
+        'coupon_id',
         'status',
         'payment_status',
         'payment_method',
@@ -74,6 +75,14 @@ class Booking extends Model
     public function package(): BelongsTo
     {
         return $this->belongsTo(Package::class);
+    }
+
+    /**
+     * Get the coupon used for the booking
+     */
+    public function coupon(): BelongsTo
+    {
+        return $this->belongsTo(Coupon::class);
     }
 
     /**
