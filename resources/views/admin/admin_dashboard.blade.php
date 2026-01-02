@@ -89,9 +89,9 @@ body{
   <!-- HEADER -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h4 class="fw-bold mb-0">Admin Lists</h4>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAdminModal">
+    {{-- <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAdminModal">
       + Add Admin
-    </button>
+    </button> --}}
   </div>
 
   <!-- SUCCESS MESSAGE -->
