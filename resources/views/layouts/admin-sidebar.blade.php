@@ -2,7 +2,7 @@
 {{-- Usage: @include('layouts.admin-sidebar', ['activePage' => 'dashboard']) ---
 
   Available activePage values:
-  - dashboard, admin, users, bookings, packages, coupons, reports, invoice
+  - dashboard, admin, users, bookings, packages, coupons, reviews, reports, invoice
 --}}
 @php
   $active = $activePage ?? 'dashboard';
@@ -38,6 +38,9 @@
   </a>
   <a href="{{ url('/admin/coupons') }}" class="sidebar-link {{ $active === 'coupons' ? 'active' : '' }}">
     <span>🎟</span> Coupons
+  </a>
+  <a href="{{ url('/admin/reviews') }}" class="sidebar-link {{ $active === 'reviews' ? 'active' : '' }}">
+    <span>⭐</span> Reviews
   </a>
   <a href="{{ url('/admin/reports') }}" class="sidebar-link {{ $active === 'reports' ? 'active' : '' }}">
     <span>📄</span> Generate Report

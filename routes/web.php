@@ -124,6 +124,13 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::put('/coupons/{id}', [App\Http\Controllers\Admin\CouponController::class, 'update'])->name('coupons.update');
     Route::delete('/coupons/{id}', [App\Http\Controllers\Admin\CouponController::class, 'destroy'])->name('coupons.destroy');
 
+    // Review Management
+    Route::get('/reviews', [App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews');
+    Route::post('/reviews/{review}/reply', [App\Http\Controllers\Admin\ReviewController::class, 'reply'])->name('reviews.reply');
+    Route::put('/reviews/{review}/reply', [App\Http\Controllers\Admin\ReviewController::class, 'updateReply'])->name('reviews.update-reply');
+    Route::delete('/reviews/{review}/reply', [App\Http\Controllers\Admin\ReviewController::class, 'deleteReply'])->name('reviews.delete-reply');
+    Route::delete('/reviews/{review}', [App\Http\Controllers\Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
+
     // Reports
     Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports');
     Route::post('/reports/generate', [App\Http\Controllers\Admin\ReportController::class, 'generate'])->name('reports.generate');

@@ -320,7 +320,8 @@
                                 <div class="flex gap-0.5">
                                     @for($i = 1; $i <= 5; $i++)
                                         <iconify-icon icon="lucide:star" width="14"
-                                            class="@if($i <= $testimonial->rating) text-yellow-400 @else text-zinc-600 @endif">
+                                            class="@if($i <= $testimonial->rating) text-yellow-400 @else text-zinc-600 @endif"
+                                            @if($i <= $testimonial->rating) style="fill: currentColor;" @endif>
                                         </iconify-icon>
                                     @endfor
                                 </div>
@@ -336,6 +337,12 @@
                     <p class="text-sm text-zinc-300 leading-relaxed">
                         "{{ $testimonial->feedback }}"
                     </p>
+                    @if($testimonial->admin_reply)
+                    <div class="mt-4 p-3 bg-white/5 rounded-lg border-l-2 border-emerald-400">
+                        <p class="text-xs font-medium text-emerald-400 mb-1">Admin Reply:</p>
+                        <p class="text-sm text-zinc-300">{{ $testimonial->admin_reply }}</p>
+                    </div>
+                    @endif
                 </div>
                 @endforeach
             </div>

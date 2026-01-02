@@ -16,6 +16,12 @@ class Review extends Model
         'package_id',
         'rating',
         'feedback',
+        'admin_reply',
+        'replied_at',
+    ];
+
+    protected $casts = [
+        'replied_at' => 'datetime',
     ];
 
     /**
