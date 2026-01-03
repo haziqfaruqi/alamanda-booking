@@ -521,10 +521,12 @@ function setRating(rating) {
     stars.forEach((star, index) => {
         if (index < rating) {
             star.classList.remove('text-zinc-300');
-            star.classList.add('text-amber-400', 'fill-amber-400');
+            star.classList.add('text-amber-400');
+            star.style.fill = 'currentColor';
         } else {
             star.classList.add('text-zinc-300');
-            star.classList.remove('text-amber-400', 'fill-amber-400');
+            star.classList.remove('text-amber-400');
+            star.style.fill = 'none';
         }
     });
 }
