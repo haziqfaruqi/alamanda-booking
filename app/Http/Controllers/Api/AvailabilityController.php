@@ -21,22 +21,34 @@ class AvailabilityController extends Controller
      */
     public function check(Request $request): JsonResponse
     {
-        $request->validate([
-            'check_in_date' => 'required|date|after:today',
-            'check_out_date' => 'required|date|after:check_in_date',
-        ]);
+        try {
+            $request->validate([
+                'check_in_date' => 'required|date|after:today',
+                'check_out_date' => 'required|date|after:check_in_date',
+            ]);
 
-        $checkIn = $request->input('check_in_date');
-        $checkOut = $request->input('check_out_date');
+            $checkIn = $request->input('check_in_date');
+            $checkOut = $request->input('check_out_date');
 
-        $isAvailable = $this->calendarService->isAvailable($checkIn, $checkOut);
+            $isAvailable = $this->calendarService->isAvailable($checkIn, $checkOut);
 
-        return response()->json([
-            'available' => $isAvailable,
-            'message' => $isAvailable
-                ? 'These dates are available for booking.'
-                : 'These dates are not available. Please choose different dates.',
-        ]);
+            return response()->json([
+                'available' => $isAvailable,
+                'message' => $isAvailable
+                    ? 'These dates are available for booking.'
+                    : 'These dates are not available. Please choose different dates.',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'available' => false,
+                'message' => 'Invalid dates: ' . collect($e->errors())->flatten()->first(),
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'available' => true,
+                'message' => 'Availability check temporarily unavailable.',
+            ]);
+        }
     }
 
     /**

@@ -27,13 +27,12 @@ class BookingController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $guests = $request->input('guests', []);
+
+        $rules = [
             'package_id' => 'required|exists:packages,id',
             'check_in_date' => 'required|date|after:today',
             'check_out_date' => 'required|date|after:check_in_date',
-            'contact_name' => 'required|string|max:255',
-            'contact_phone' => 'required|string|max:20',
-            'contact_email' => 'required|email|max:255',
             'total_guests' => 'required|integer|min:1|max:30',
             'total_adults' => 'nullable|integer|min:1',
             'total_children' => 'nullable|integer|min:0',
@@ -44,15 +43,25 @@ class BookingController extends Controller
             'guests.*.date_of_birth' => 'nullable|date|before:today',
             'guests.*.age' => 'nullable|integer|min:0|max:150',
             'coupon_code' => 'nullable|string|max:50',
-        ], [
+        ];
+
+        // Add phone/email required only for first guest
+        $rules['guests.0.phone'] = 'required|string|max:20';
+        $rules['guests.0.email'] = 'required|email|max:255';
+        $rules['guests.*.phone'] = 'nullable|string|max:20';
+        $rules['guests.*.email'] = 'nullable|email|max:255';
+
+        $validated = $request->validate($rules, [
             'guests.*.id_type.required' => 'ID type is required.',
             'guests.*.id_number.required' => 'ID number is required.',
             'guests.*.date_of_birth.required' => 'Date of birth is required for passport holders.',
+            'guests.0.phone.required' => 'Phone number is required for the first guest.',
+            'guests.0.email.required' => 'Email address is required for the first guest.',
         ]);
 
         // Custom validation: DOB is required for passport holders
-        foreach ($request->input('guests', []) as $index => $guest) {
-            if (($guest['id_type'] ?? '') === 'passport' && empty($guest['date_of_birth'])) {
+        foreach ($guests as $index => $guest) {
+            if (($guest['id_type'] ?? '') === 'passport' && empty($guest['date_of_birth']) && $index > 0) {
                 return back()->withInput()->withErrors([
                     "guests.{$index}.date_of_birth" => 'Date of birth is required for passport holders.'
                 ]);
@@ -71,6 +80,9 @@ class BookingController extends Controller
 
         $package = Package::findOrFail($validated['package_id']);
         $user = auth()->user();
+
+        // Use first guest's contact info as primary contact
+        $firstGuest = $validated['guests'][0];
 
         DB::beginTransaction();
 
@@ -120,19 +132,25 @@ class BookingController extends Controller
                 'coupon_id' => $appliedCoupon ? $appliedCoupon->id : null,
                 'status' => 'pending',
                 'payment_status' => 'unpaid',
-                'contact_name' => $validated['contact_name'],
-                'contact_phone' => $validated['contact_phone'],
-                'contact_email' => $validated['contact_email'],
+                'contact_name' => $firstGuest['name'],
+                'contact_phone' => $firstGuest['phone'],
+                'contact_email' => $firstGuest['email'],
             ]);
 
             // Create guests
-            foreach ($validated['guests'] as $guestData) {
-                // Determine guest type based on age (if provided)
-                $guestAge = $guestData['age'] ?? null;
-                $guestType = 'adult'; // default to adult
+            foreach ($validated['guests'] as $index => $guestData) {
+                $isFirstGuest = $index === 0;
 
+                // For first guest with IC, calculate age from IC
+                if ($isFirstGuest && ($guestData['id_type'] ?? '') === 'ic') {
+                    $guestAge = $this->calculateAgeFromIC($guestData['id_number']);
+                } else {
+                    $guestAge = $guestData['age'] ?? null;
+                }
+
+                // Determine guest type based on age (if provided)
+                $guestType = 'adult';
                 if ($guestAge !== null) {
-                    // Consider 12 and below as child
                     $guestType = $guestAge <= 12 ? 'child' : 'adult';
                 }
 
@@ -140,6 +158,8 @@ class BookingController extends Controller
                     'booking_id' => $booking->id,
                     'guest_name' => $guestData['name'],
                     'guest_ic' => $guestData['id_type'] === 'ic' ? $guestData['id_number'] : null,
+                    'phone' => $guestData['phone'] ?? null,
+                    'email' => $guestData['email'] ?? null,
                     'id_type' => $guestData['id_type'],
                     'id_number' => $guestData['id_number'],
                     'guest_type' => $guestType,
@@ -184,6 +204,27 @@ class BookingController extends Controller
         $childPrice = (float) ($package->price_fullboard_child ?? 0);
 
         return ($adults * $adultPrice) + ($children * $childPrice);
+    }
+
+    /**
+     * Calculate age from Malaysian IC number
+     */
+    private function calculateAgeFromIC(string $icNumber): ?int
+    {
+        if (strlen($icNumber) < 12) {
+            return null;
+        }
+
+        $yy = (int) substr($icNumber, 0, 2);
+        $currentYear = (int) date('Y');
+        $currentCentury = (int) floor($currentYear / 100) * 100;
+
+        $birthYear = $currentCentury + $yy;
+        if ($birthYear > $currentYear) {
+            $birthYear -= 100;
+        }
+
+        return $currentYear - $birthYear;
     }
 
     /**

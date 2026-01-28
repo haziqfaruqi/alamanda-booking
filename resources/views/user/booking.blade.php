@@ -186,29 +186,6 @@
                     <div id="availabilityStatus" class="mt-4 hidden rounded-xl p-4 text-sm"></div>
                 </div>
 
-                <!-- CONTACT SECTION -->
-                <div class="bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-zinc-200 mb-8">
-                    <h2 class="text-xl font-semibold text-zinc-900 mb-6 flex items-center gap-2">
-                        <iconify-icon icon="lucide:user" width="20" class="text-indigo-500"></iconify-icon>
-                        Contact Details
-                    </h2>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-zinc-700 mb-2">Full Name *</label>
-                            <input type="text" name="contact_name" required value="{{ auth()->user()->name ?? '' }}" class="w-full px-4 py-3 border border-zinc-300 rounded-xl text-sm" placeholder="Enter your full name">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 mb-2">Phone Number *</label>
-                            <input type="tel" name="contact_phone" required placeholder="0123456789" class="w-full px-4 py-3 border border-zinc-300 rounded-xl text-sm">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 mb-2">Email Address *</label>
-                            <input type="email" name="contact_email" required value="{{ auth()->user()->email ?? '' }}" class="w-full px-4 py-3 border border-zinc-300 rounded-xl text-sm" placeholder="your@email.com">
-                        </div>
-                    </div>
-                </div>
-
                 <!-- GUEST SECTION -->
                 <div class="bg-white rounded-3xl p-8 md:p-10 shadow-sm border border-zinc-200">
                     <h2 class="text-xl font-semibold text-zinc-900 mb-6 flex items-center gap-2">
@@ -363,17 +340,35 @@
             return;
         }
 
-        guestCount++;
+        const isFirstGuest = guestCount === 0;
         const div = document.createElement("div");
         div.className = "guest-form-item border border-zinc-200 rounded-xl p-4";
         div.innerHTML = `
             <div class="flex items-center justify-between mb-3">
-                <h4 class="font-medium text-zinc-900">Guest ${guestCount}</h4>
+                <h4 class="font-medium text-zinc-900">Guest ${guestCount + 1}</h4>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                 <div>
                     <label class="block text-xs font-medium text-zinc-600 mb-1.5">Full Name *</label>
                     <input type="text" name="guests[${guestCount}][name]" oninput="validateGuests()" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm" placeholder="Guest name">
+                </div>
+                ${isFirstGuest ? `
+                <div>
+                    <label class="block text-xs font-medium text-zinc-600 mb-1.5">Phone Number *</label>
+                    <input type="tel" name="guests[${guestCount}][phone]" oninput="validateGuests()" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm" placeholder="0123456789">
+                </div>
+                ` : `
+                <div>
+                    <label class="block text-xs font-medium text-zinc-600 mb-1.5">IC / Passport Number *</label>
+                    <input type="text" name="guests[${guestCount}][id_number]" oninput="validateGuests()" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm" placeholder="IC/Passport number">
+                </div>
+                `}
+            </div>
+            ${isFirstGuest ? `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                <div>
+                    <label class="block text-xs font-medium text-zinc-600 mb-1.5">Email Address *</label>
+                    <input type="email" name="guests[${guestCount}][email]" oninput="validateGuests();" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm" placeholder="your@email.com">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-zinc-600 mb-1.5">ID Type *</label>
@@ -382,20 +377,50 @@
                         <option value="passport">Passport (Foreigner)</option>
                     </select>
                 </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-medium text-zinc-600 mb-1.5" id="id-label-${guestCount}">IC Number *</label>
                     <input type="text" name="guests[${guestCount}][id_number]" oninput="calculateAge(${guestCount}); validateGuests();" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm" id="id-input-${guestCount}" placeholder="e.g., 010101010101">
                     <p class="text-xs text-zinc-500 mt-1" id="age-display-${guestCount}"></p>
                 </div>
+                <div class="flex items-end">
+                    <div class="w-full">
+                        <p class="text-xs text-zinc-500">Adults: 13+ years | Children: 12 years and below</p>
+                    </div>
+                </div>
             </div>
             <!-- Date of Birth field for passport holders (hidden by default) -->
             <div class="mt-3 hidden" id="dob-container-${guestCount}">
-                <label class="block text-xs font-medium text-zinc-600 mb-1.5">Date of Birth * (for age calculation)</label>
-                <input type="date" name="guests[${guestCount}][date_of_birth]" onchange="calculateAgeFromDob(${guestCount})" class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm" id="dob-input-${guestCount}">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-zinc-600 mb-1.5">Date of Birth *</label>
+                        <input type="date" name="guests[${guestCount}][date_of_birth]" onchange="calculateAgeFromDob(${guestCount})" class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm" id="dob-input-${guestCount}">
+                        <p class="text-xs text-zinc-500 mt-1" id="dob-age-display-${guestCount}"></p>
+                    </div>
+                </div>
             </div>
             <input type="hidden" name="guests[${guestCount}][age]" id="age-hidden-${guestCount}">
+            ` : `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+                <div>
+                    <label class="block text-xs font-medium text-zinc-600 mb-1.5">ID Type *</label>
+                    <select name="guests[${guestCount}][id_type]" onchange="toggleIdInput(this, ${guestCount}); validateGuests();" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm">
+                        <option value="ic">IC (Malaysian)</option>
+                        <option value="passport">Passport (Foreigner)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-600 mb-1.5">Date of Birth *</label>
+                    <input type="date" name="guests[${guestCount}][date_of_birth]" onchange="calculateAgeFromDob(${guestCount}); validateGuests();" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm">
+                    <p class="text-xs text-zinc-500 mt-1" id="age-display-${guestCount}"></p>
+                </div>
+            </div>
+            <input type="hidden" name="guests[${guestCount}][age]" id="age-hidden-${guestCount}">
+            `}
         `;
         guestContainer.appendChild(div);
+        guestCount++;
         validateGuests();
     }
 
@@ -431,7 +456,8 @@
     function calculateAgeFromDob(guestNum) {
         const dobInput = document.getElementById(`dob-input-${guestNum}`);
         const ageHidden = document.getElementById(`age-hidden-${guestNum}`);
-        const ageDisplay = document.getElementById(`age-display-${guestNum}`);
+        // For first guest, use dob-age-display, for others use age-display
+        const ageDisplay = document.getElementById(`dob-age-display-${guestNum}`) || document.getElementById(`age-display-${guestNum}`);
 
         if (dobInput.value) {
             const dob = new Date(dobInput.value);
@@ -444,11 +470,15 @@
             }
 
             ageHidden.value = age;
-            ageDisplay.textContent = `Age: ${age} years old`;
-            ageDisplay.className = 'text-xs text-emerald-600 mt-1';
+            if (ageDisplay) {
+                ageDisplay.textContent = `Age: ${age} years old`;
+                ageDisplay.className = 'text-xs text-emerald-600 mt-1';
+            }
         } else {
             ageHidden.value = '';
-            ageDisplay.textContent = '';
+            if (ageDisplay) {
+                ageDisplay.textContent = '';
+            }
         }
 
         validateGuests();
@@ -720,8 +750,16 @@
         availabilityCheckTimer = setTimeout(async() => {
             try{
                 const response = await fetch(`/api/availability/check?check_in_date=${checkIn}&check_out_date=${checkOut}`);
+
+                // Check if response has JSON content
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    throw new Error('Invalid response format');
+                }
+
                 const data = await response.json();
 
+                // Handle validation errors (422) and other responses
                 if(data.available){
                     availabilityStatus.className = "mt-4 rounded-xl p-4 text-sm bg-emerald-50 text-emerald-700 border border-emerald-200";
                     availabilityStatus.innerHTML = `
@@ -743,6 +781,7 @@
                 }
             } catch(error){
                 console.error("Availability check failed:", error);
+                // Don't show availability status on error, allow booking to proceed
                 availabilityStatus.classList.add("hidden");
                 isDatesAvailable = true;
             }
