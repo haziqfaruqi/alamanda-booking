@@ -191,8 +191,8 @@ class BookingController extends Controller
      */
     private function calculateTotalPrice(Package $package, array $data): float
     {
-        // Standard package pricing
-        if ($package->price_standard) {
+        // Standard package pricing (only if price is greater than 0)
+        if ($package->price_standard && $package->price_standard > 0) {
             return (float) $package->price_standard;
         }
 

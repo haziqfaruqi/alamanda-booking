@@ -412,7 +412,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-zinc-600 mb-1.5">Date of Birth *</label>
-                    <input type="date" name="guests[${guestCount}][date_of_birth]" onchange="calculateAgeFromDob(${guestCount}); validateGuests();" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm">
+                    <input type="date" name="guests[${guestCount}][date_of_birth]" id="dob-input-${guestCount}" onchange="calculateAgeFromDob(${guestCount}); validateGuests();" required class="w-full px-3 py-2 border border-zinc-300 rounded-lg text-sm">
                     <p class="text-xs text-zinc-500 mt-1" id="age-display-${guestCount}"></p>
                 </div>
             </div>
@@ -585,11 +585,13 @@
             });
             if (allFilled) filled++;
         });
-        totalGuestsInput.value = filled;
+
+        // Use actual guest count for total_guests, not filled count
+        totalGuestsInput.value = guestCount;
 
         const guestCountTextEl = document.getElementById("guestCountText");
         if (guestCountTextEl) {
-            guestCountTextEl.textContent = `${filled} / ${MAX_GUESTS} guests`;
+            guestCountTextEl.textContent = `${filled} / ${guestCount} guests completed`;
         }
 
         // Enable submit if at least 1 guest and dates are available
