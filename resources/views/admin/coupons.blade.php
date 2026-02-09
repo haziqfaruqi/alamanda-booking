@@ -7,417 +7,358 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
-    body{
-      font-family:'Inter',sans-serif;
-      background:#f4f6fb;
-      overflow-x:hidden;
-    }
+        :root {
+            --main-bg: #f4f7fa;
+            --accent: #4e73df;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.05);
+        }
 
-    /* ===== SIDEBAR ===== */
-    .sidebar{
-      width:260px;
-      background:#ffffff;
-      min-height:100vh;
-      border-right:1px solid #e5e7eb;
-      position:fixed;
-      left:0;
-      top:0;
-      padding:24px;
-    }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--main-bg);
+            color: var(--text-main);
+            margin: 0;
+        }
 
-    /* ===== MAIN CONTENT ===== */
-    .main-content{
-      margin-left:260px;
-      padding:32px;
-      width:calc(100vw - 260px);
-    }
+        .main-content {
+            margin-left: 260px;
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
 
-    /* ===== TOP BAR ===== */
-    .top-bar{
-      display:flex;
-      justify-content:flex-end;
-      align-items:center;
-      gap:16px;
-      margin-bottom:30px;
-    }
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
 
-    /* Avatar */
-    .avatar{
-      width:46px;
-      height:46px;
-      border-radius:50%;
-      background:#4f46e5;
-      color:#fff;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:700;
-    }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            padding: 6px 14px;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
 
-    /* ===== CARD ===== */
-    .card{
-      border:none;
-      border-radius:18px;
-      box-shadow:0 10px 28px rgba(0,0,0,.06);
-      width:100%;
-    }
+        .avatar-small {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+        }
 
-    /* ===== BADGES ===== */
-    .badge-active{
-      background:#dcfce7;
-      color:#166534;
-      font-weight:600;
-    }
-    .badge-inactive{
-      background:#fee2e2;
-      color:#991b1b;
-      font-weight:600;
-    }
-    .badge-percentage{
-      background:#dbeafe;
-      color:#1e40af;
-      font-weight:600;
-    }
-    .badge-fixed{
-      background:#fef3c7;
-      color:#92400e;
-      font-weight:600;
-    }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            background: #fff;
+        }
 
-    /* ===== COUPON CODE ===== */
-    .coupon-code{
-      font-family:'Courier New',monospace;
-      font-weight:700;
-      letter-spacing:1px;
-      background:#f3f4f6;
-      padding:6px 12px;
-      border-radius:8px;
-    }
+        /* Coupon Code Styling */
+        .coupon-code {
+            font-family: 'Courier New', monospace;
+            font-weight: 800;
+            color: var(--accent);
+            background: #f0f3ff;
+            padding: 4px 10px;
+            border-radius: 6px;
+            border: 1px dashed var(--accent);
+        }
 
-    /* ===== MODAL ===== */
-    .modal-content{
-      border-radius:18px;
-      border:none;
-    }
-    .modal-header{
-      border-bottom:1px solid #e5e7eb;
-      padding:20px 24px;
-    }
-    .modal-body{
-      padding:24px;
-    }
+        /* Table Style */
+        .table thead th {
+            background-color: #f8f9fc;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            border: none;
+            padding: 15px;
+        }
+
+        .table tbody td {
+            padding: 15px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* Badges */
+        .badge-sleek {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        .status-active { background: #e6fffa; color: #047481; }
+        .status-inactive { background: #fff5f5; color: #9b2c2c; }
+        .type-percentage { background: #ebf8ff; color: #2c5282; }
+        .type-fixed { background: #fffaf0; color: #9c4221; }
+
+        .btn-add {
+            background-color: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
     </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 @include('layouts.admin-sidebar', ['activePage' => 'coupons'])
 
-<!-- MAIN CONTENT -->
 <main class="main-content">
-
-  <!-- TOP BAR -->
-  <div class="top-bar">
-    <div class="text-end">
-      <div class="fw-semibold">{{ auth()->user()->name ?? 'Admin' }}</div>
-      <small class="text-muted">Administrator</small>
+    <div class="top-bar">
+        <div class="user-profile">
+            <div class="text-end">
+                <div style="font-size: 0.8rem; font-weight: 700;">{{ auth()->user()->name ?? 'Admin' }}</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted);">Administrator</div>
+            </div>
+            <div class="avatar-small">{{ substr(auth()->user()->name ?? 'A', 0, 1) }}</div>
+        </div>
     </div>
-    <div class="avatar">{{ substr(auth()->user()->name, 0, 1) ?? 'A' }}</div>
-  </div>
 
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold mb-0">Discount Coupons</h4>
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCouponModal">
-      <i class="bi bi-plus-lg me-2"></i>Create Coupon
-    </button>
-  </div>
-
-  <!-- COUPONS CARD -->
-  <div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0" style="font-size: 1.25rem;">Discount Coupons</h4>
+        <button class="btn btn-add" data-bs-toggle="modal" data-bs-target="#createCouponModal">
+            <i class="fa-solid fa-plus me-2"></i>Create Coupon
+        </button>
+    </div>
 
     @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      {{ session('success') }}
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div class="alert alert-success border-0 shadow-sm mb-4" style="border-radius: 10px; font-size: 0.85rem;">
+        <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
     @endif
 
-    <!-- TABLE -->
-    <div class="table-responsive">
-      <table class="table align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Code</th>
-            <th>Type</th>
-            <th>Value</th>
-            <th>Validity</th>
-            <th>Usage</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          @forelse($coupons ?? [] as $coupon)
-          <tr>
-            <td>
-              <span class="coupon-code">{{ $coupon->code }}</span>
-              @if($coupon->description)
-              <br><small class="text-muted">{{ $coupon->description }}</small>
-              @endif
-            </td>
-            <td>
-              <span class="badge badge-{{ $coupon->type === 'percentage' ? 'percentage' : 'fixed' }}">
-                {{ ucfirst($coupon->type) }}
-              </span>
-            </td>
-            <td>
-              @if($coupon->type === 'percentage')
-                <strong>{{ $coupon->value }}%</strong>
-              @else
-                <strong>RM {{ number_format($coupon->value, 2) }}</strong>
-              @endif
-              @if($coupon->min_guests > 1)
-              <br><small class="text-muted">Min {{ $coupon->min_guests }} guests</small>
-              @endif
-            </td>
-            <td>
-              <small class="d-block">{{ \Carbon\Carbon::parse($coupon->valid_from)->format('d M Y') }}</small>
-              <small class="text-muted">to {{ \Carbon\Carbon::parse($coupon->valid_until)->format('d M Y') }}</small>
-            </td>
-            <td>
-              <span class="fw-semibold">{{ $coupon->used_count }}</span>
-              @if($coupon->max_uses)
-              <small class="text-muted"> / {{ $coupon->max_uses }}</small>
-              @else
-              <small class="text-muted"> / Unlimited</small>
-              @endif
-            </td>
-            <td>
-              @if($coupon->is_active && now()->between($coupon->valid_from, $coupon->valid_until) && (!$coupon->max_uses || $coupon->used_count < $coupon->max_uses))
-                <span class="badge badge-active">Active</span>
-              @else
-                <span class="badge badge-inactive">Inactive</span>
-              @endif
-            </td>
-            <td>
-              <div class="d-flex gap-2">
-                <button type="button" class="btn btn-sm btn-outline-primary" onclick="editCoupon({{ $coupon->id }})">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <form method="POST" action="{{ route('admin.coupons.update', $coupon->id) }}">
-                  @csrf
-                  @method('PUT')
-                  <input type="hidden" name="is_active" value="{{ $coupon->is_active ? '0' : '1' }}">
-                  <button type="submit" class="btn btn-sm {{ $coupon->is_active ? 'btn-warning' : 'btn-success' }}">
-                    {{ $coupon->is_active ? 'Disable' : 'Enable' }}
-                  </button>
-                </form>
-                <form method="POST" action="{{ route('admin.coupons.destroy', $coupon->id) }}" onsubmit="return confirm('Are you sure you want to delete this coupon?');">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="btn btn-sm btn-outline-danger">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </form>
-              </div>
-            </td>
-          </tr>
-          @empty
-          <tr>
-            <td colspan="7" class="text-center text-muted py-4">No coupons found. Create your first coupon!</td>
-          </tr>
-          @endforelse
-        </tbody>
-      </table>
+    <div class="card p-2">
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Coupon Info</th>
+                        <th>Type</th>
+                        <th>Value</th>
+                        <th>Validity Period</th>
+                        <th>Usage</th>
+                        <th>Status</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($coupons ?? [] as $coupon)
+                    <tr>
+                        <td class="ps-4">
+                            <span class="coupon-code">{{ $coupon->code }}</span>
+                            @if($coupon->description)
+                            <div class="text-muted mt-1" style="font-size: 0.75rem;">{{ $coupon->description }}</div>
+                            @endif
+                        </td>
+                        <td>
+                            <span class="badge-sleek {{ $coupon->type === 'percentage' ? 'type-percentage' : 'type-fixed' }}">
+                                {{ $coupon->type }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="fw-bold">
+                                {{ $coupon->type === 'percentage' ? $coupon->value.'%' : 'RM '.number_format($coupon->value, 2) }}
+                            </div>
+                            @if($coupon->min_guests > 1)
+                            <small class="text-muted">Min {{ $coupon->min_guests }} guests</small>
+                            @endif
+                        </td>
+                        <td>
+                            <div style="font-size: 0.8rem;">
+                                <div class="fw-600">{{ \Carbon\Carbon::parse($coupon->valid_from)->format('d M Y') }}</div>
+                                <div class="text-muted">Until {{ \Carbon\Carbon::parse($coupon->valid_until)->format('d M Y') }}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="fw-bold text-primary">{{ $coupon->used_count }}</span>
+                            <span class="text-muted">/ {{ $coupon->max_uses ?? '∞' }}</span>
+                        </td>
+                        <td>
+                            @php
+                                $isActive = $coupon->is_active && now()->between($coupon->valid_from, $coupon->valid_until) && (!$coupon->max_uses || $coupon->used_count < $coupon->max_uses);
+                            @endphp
+                            <span class="badge-sleek {{ $isActive ? 'status-active' : 'status-inactive' }}">
+                                {{ $isActive ? 'Active' : 'Inactive' }}
+                            </span>
+                        </td>
+                        <td class="text-end pe-4">
+                            <div class="d-flex justify-content-end gap-1">
+                                <button type="button" class="btn btn-sm btn-outline-primary action-btn" onclick="editCoupon({{ $coupon->id }})">
+                                    <i class="fa-solid fa-pen"></i>
+                                </button>
+                                <form method="POST" action="{{ route('admin.coupons.update', $coupon->id) }}">
+                                    @csrf @method('PUT')
+                                    <input type="hidden" name="is_active" value="{{ $coupon->is_active ? '0' : '1' }}">
+                                    <button type="submit" class="btn btn-sm action-btn {{ $coupon->is_active ? 'btn-outline-warning' : 'btn-outline-success' }}">
+                                        {{ $coupon->is_active ? 'Disable' : 'Enable' }}
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('admin.coupons.destroy', $coupon->id) }}" onsubmit="return confirm('Delete this coupon?');">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="btn btn-sm btn-outline-danger action-btn">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="7" class="text-center py-5 text-muted">No coupons found.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
-
-  </div>
-
 </main>
 
-<!-- CREATE COUPON MODAL -->
 <div class="modal fade" id="createCouponModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold">Create New Coupon</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <form method="POST" action="{{ route('admin.coupons.store') }}">
-        @csrf
-        <div class="modal-body">
-          <!-- Code -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Coupon Code</label>
-            <input type="text" name="code" class="form-control" placeholder="e.g., RAYA2025" required>
-            <small class="text-muted">Spaces will be removed automatically. Code will be uppercase.</small>
-          </div>
-
-          <!-- Type -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Discount Type</label>
-            <select name="type" class="form-select" required>
-              <option value="percentage">Percentage (%)</option>
-              <option value="fixed">Fixed Amount (RM)</option>
-            </select>
-          </div>
-
-          <!-- Value -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Discount Value</label>
-            <input type="number" name="value" class="form-control" step="0.01" min="0" placeholder="e.g., 20" required>
-            <small class="text-muted" id="valueHelp">Enter percentage amount (e.g., 20 for 20%)</small>
-          </div>
-
-          <!-- Valid From -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Valid From</label>
-            <input type="datetime-local" name="valid_from" class="form-control" required>
-          </div>
-
-          <!-- Valid Until -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Valid Until</label>
-            <input type="datetime-local" name="valid_until" class="form-control" required>
-          </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0 px-4 pt-4">
+                <h5 class="modal-title fw-bold">Create New Coupon</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ route('admin.coupons.store') }}">
+                @csrf
+                <div class="modal-body px-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted uppercase">Coupon Code</label>
+                        <input type="text" name="code" class="form-control" placeholder="e.g. RAYA2026" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Type</label>
+                            <select name="type" class="form-select" id="createType">
+                                <option value="percentage">Percentage (%)</option>
+                                <option value="fixed">Fixed (RM)</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Value</label>
+                            <input type="number" name="value" class="form-control" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Valid From</label>
+                        <input type="datetime-local" name="valid_from" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Valid Until</label>
+                        <input type="datetime-local" name="valid_until" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4">
+                    <button type="button" class="btn btn-light btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold">Create Coupon</button>
+                </div>
+            </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Create Coupon</button>
-        </div>
-      </form>
     </div>
-  </div>
 </div>
 
-<!-- EDIT COUPON MODAL -->
 <div class="modal fade" id="editCouponModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title fw-bold">Edit Coupon</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <form method="POST" id="editCouponForm" action="">
-        @csrf
-        <input type="hidden" id="editCouponId" name="coupon_id" value="">
-        <div class="modal-body">
-          <!-- Code (Read-only) -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Coupon Code</label>
-            <input type="text" id="editCode" class="form-control" readonly>
-            <small class="text-muted">Code cannot be changed.</small>
-          </div>
-
-          <!-- Type -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Discount Type</label>
-            <select id="editType" name="type" class="form-select" required>
-              <option value="percentage">Percentage (%)</option>
-              <option value="fixed">Fixed Amount (RM)</option>
-            </select>
-          </div>
-
-          <!-- Value -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Discount Value</label>
-            <input type="number" id="editValue" name="value" class="form-control" step="0.01" min="0" required>
-          </div>
-
-          <!-- Valid From -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Valid From</label>
-            <input type="datetime-local" id="editValidFrom" name="valid_from" class="form-control" required>
-          </div>
-
-          <!-- Valid Until -->
-          <div class="mb-3">
-            <label class="form-label fw-semibold">Valid Until</label>
-            <input type="datetime-local" id="editValidUntil" name="valid_until" class="form-control" required>
-          </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header border-0 pb-0 px-4 pt-4">
+                <h5 class="modal-title fw-bold">Edit Coupon</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" id="editCouponForm" action="">
+                @csrf @method('PUT')
+                <div class="modal-body px-4">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Coupon Code</label>
+                        <input type="text" id="editCode" class="form-control bg-light" readonly>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Type</label>
+                            <select id="editType" name="type" class="form-select">
+                                <option value="percentage">Percentage (%)</option>
+                                <option value="fixed">Fixed (RM)</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-bold text-muted">Value</label>
+                            <input type="number" id="editValue" name="value" class="form-control" step="0.01" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Valid From</label>
+                        <input type="datetime-local" id="editValidFrom" name="valid_from" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Valid Until</label>
+                        <input type="datetime-local" id="editValidUntil" name="valid_until" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4">
+                    <button type="button" class="btn btn-light btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4 fw-bold">Update Coupon</button>
+                </div>
+            </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Update Coupon</button>
-        </div>
-      </form>
     </div>
-  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
-// Update help text based on discount type
-document.querySelector('select[name="type"]').addEventListener('change', function() {
-  const helpText = document.getElementById('valueHelp');
-  if (this.value === 'percentage') {
-    helpText.textContent = 'Enter percentage amount (e.g., 20 for 20%)';
-  } else {
-    helpText.textContent = 'Enter fixed amount in RM (e.g., 100 for RM100 off)';
-  }
-});
-
-// Edit coupon function
 async function editCoupon(id) {
-  try {
-    const response = await fetch(`/admin/coupons/${id}/edit`, {
-      headers: {
-        'X-CSRF-TOKEN': csrfToken || '',
-        'Accept': 'application/json'
-      }
-    });
+    try {
+        const response = await fetch(`/admin/coupons/${id}/edit`, {
+            headers: { 'X-CSRF-TOKEN': csrfToken, 'Accept': 'application/json' }
+        });
+        const coupon = await response.json();
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Response error:', response.status, errorText);
-      throw new Error('Failed to fetch coupon');
-    }
+        document.getElementById('editCouponForm').action = `/admin/coupons/${id}/update`;
+        document.getElementById('editCode').value = coupon.code;
+        document.getElementById('editType').value = coupon.type;
+        document.getElementById('editValue').value = coupon.value;
 
-    const coupon = await response.json();
-    console.log('Coupon data:', coupon);
+        const formatDT = (dateStr) => {
+            const d = new Date(dateStr);
+            return d.toISOString().slice(0, 16);
+        };
 
-    // Set form action URL
-    document.getElementById('editCouponForm').action = `/admin/coupons/${id}/update`;
+        document.getElementById('editValidFrom').value = formatDT(coupon.valid_from);
+        document.getElementById('editValidUntil').value = formatDT(coupon.valid_until);
 
-    // Populate modal with coupon data
-    document.getElementById('editCouponId').value = coupon.id;
-    document.getElementById('editCode').value = coupon.code;
-    document.getElementById('editType').value = coupon.type;
-    document.getElementById('editValue').value = coupon.value;
-
-    // Format dates for datetime-local input
-    const validFrom = new Date(coupon.valid_from);
-    const validUntil = new Date(coupon.valid_until);
-
-    // Format to YYYY-MM-DDTHH:mm
-    const formatDateTime = (date) => {
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const hours = String(date.getHours()).padStart(2, '0');
-      const minutes = String(date.getMinutes()).padStart(2, '0');
-      return `${year}-${month}-${day}T${hours}:${minutes}`;
-    };
-
-    document.getElementById('editValidFrom').value = formatDateTime(validFrom);
-    document.getElementById('editValidUntil').value = formatDateTime(validUntil);
-
-    // Show modal
-    const modal = new bootstrap.Modal(document.getElementById('editCouponModal'));
-    modal.show();
-
-  } catch (error) {
-    console.error('Error:', error);
-    alert('Failed to load coupon details. Please try again.');
-  }
+        new bootstrap.Modal(document.getElementById('editCouponModal')).show();
+    } catch (e) { alert('Error loading coupon.'); }
 }
 </script>
 </body>

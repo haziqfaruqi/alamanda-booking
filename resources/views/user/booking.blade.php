@@ -239,7 +239,7 @@
                         <iconify-icon icon="lucide:ticket" width="20" class="text-emerald-500"></iconify-icon>
                         Discount Coupon
                     </h2>
-
+<br>
                     <div class="flex gap-3">
                         <div class="flex-1">
                             <input type="text" name="coupon_code" id="couponCode" class="w-full px-4 py-3 border border-zinc-300 rounded-xl text-sm uppercase" placeholder="Enter coupon code (if any)">

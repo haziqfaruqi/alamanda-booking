@@ -49,7 +49,7 @@
   gap: 12px;
 }
 
-.guest-header-logo img { width: 55px; }
+.guest-header-logo img { width: 80px; }
 
 .guest-header-logo-text {
   color: white;

@@ -1,388 +1,327 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Package Management | Alamanda Houseboat</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Package Management | Alamanda Houseboat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-<style>
-body{
-  font-family:'Inter',sans-serif;
-  background:#f4f6fb;
-}
+    <style>
+        :root {
+            --main-bg: #f4f7fa;
+            --accent: #4e73df;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.05);
+            --success-soft: #f0fdf4;
+            --success-border: #10b981;
+        }
 
-/* SIDEBAR */
-.sidebar{
-  width:260px;
-  background:#fff;
-  min-height:100vh;
-  border-right:1px solid #e5e7eb;
-  position:fixed;
-  padding:24px;
-}
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--main-bg);
+            color: var(--text-main);
+            margin: 0;
+        }
 
-/* MAIN */
-.main-content{
-  margin-left:260px;
-  padding:32px;
-}
+        .main-content {
+            margin-left: 260px;
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
 
-/* TOP BAR */
-.top-bar{
-  display:flex;
-  justify-content:flex-end;
-  gap:16px;
-  margin-bottom:30px;
-}
-.avatar{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  background:#4f46e5;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-}
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
 
-/* CARD */
-.card{
-  border:none;
-  border-radius:18px;
-  box-shadow:0 10px 28px rgba(0,0,0,.06);
-}
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            padding: 6px 14px;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
 
-/* Package Type Tabs */
-.package-tabs {
-  display:flex;
-  gap:12px;
-  margin-bottom:24px;
-}
-.package-tab {
-  padding:10px 24px;
-  border:1px solid #e5e7eb;
-  border-radius:10px;
-  background:#fff;
-  cursor:pointer;
-  transition:all 0.2s;
-}
-.package-tab:hover {
-  background:#f9fafb;
-}
-.package-tab.active {
-  background:#4f46e5;
-  color:#fff;
-  border-color:#4f46e5;
-}
+        .avatar-small {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+        }
 
-/* Duration Toggle */
-.duration-toggle {
-  display:flex;
-  gap:8px;
-  margin-bottom:24px;
-}
-.duration-btn {
-  padding:8px 16px;
-  border:1px solid #e5e7eb;
-  border-radius:8px;
-  background:#fff;
-  cursor:pointer;
-  font-size:14px;
-  transition:all 0.2s;
-}
-.duration-btn:hover {
-  background:#f9fafb;
-}
-.duration-btn.active {
-  background:#10b981;
-  color:#fff;
-  border-color:#10b981;
-}
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            background: #fff;
+        }
 
-/* Package Card */
-.package-card {
-  border:2px solid #e5e7eb;
-  border-radius:16px;
-  padding:20px;
-  margin-bottom:16px;
-  background:#fff;
-  transition:all 0.2s;
-}
-.package-card:hover {
-  border-color:#4f46e5;
-}
-.package-card.exists {
-  border-color:#10b981;
-  background:#f0fdf4;
-}
-</style>
+        /* Tabs & Buttons */
+        .package-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: #f1f5f9;
+            padding: 5px;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .package-tab {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: 0.3s;
+            background: transparent;
+            color: var(--text-muted);
+        }
+
+        .package-tab.active {
+            background: #fff;
+            color: var(--accent);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .duration-btn {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-main);
+            transition: 0.2s;
+        }
+
+        .duration-btn.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        /* Package Card Sleek */
+        .package-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 25px;
+            transition: 0.3s;
+            background: #fff;
+        }
+
+        .package-card.exists {
+            border: 1.5px solid var(--success-border);
+            background: var(--success-soft);
+        }
+
+        .price-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .form-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+    </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 @include('layouts.admin-sidebar', ['activePage' => 'packages'])
 
-<!-- MAIN -->
 <main class="main-content">
-
-  <!-- TOP BAR -->
-  <div class="top-bar">
-    <div class="text-end">
-      <div class="fw-semibold">{{ auth()->user()->name ?? 'Admin' }}</div>
-      <small class="text-muted">Administrator</small>
-    </div>
-    <div class="avatar">{{ substr(auth()->user()->name, 0, 1) ?? 'A' }}</div>
-  </div>
-
-  <!-- HEADER -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold">Package Management</h4>
-  </div>
-
-  <!-- SUCCESS MESSAGE -->
-  @if(session('success'))
-  <div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-  @endif
-
-  <!-- ERROR MESSAGES -->
-  @if($errors->any())
-  <div class="alert alert-danger">
-    <ul class="mb-0">
-      @foreach($errors->all() as $error)
-      <li>{{ $error }}</li>
-      @endforeach
-    </ul>
-  </div>
-  @endif
-
-  @if(session('error'))
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-  @endif
-
-  <div class="card p-4">
-    <!-- Package Type Tabs -->
-    <div class="package-tabs">
-      <button class="package-tab @if(request('type', 'standard') == 'standard') active @endif" onclick="switchTab('standard')" id="tab-standard">
-        <strong>Standard Package</strong>
-      </button>
-      <button class="package-tab @if(request('type') == 'fullboard') active @endif" onclick="switchTab('fullboard')" id="tab-fullboard">
-        <strong>Full Board Package</strong>
-      </button>
-    </div>
-
-    <!-- Duration Toggle -->
-    <div class="duration-toggle">
-      <button class="duration-btn @if(request('duration', '2D1N') == '2D1N') active @endif" onclick="switchDuration('2D1N')" id="dur-2D1N">2D1N</button>
-      <button class="duration-btn @if(request('duration') == '3D2N') active @endif" onclick="switchDuration('3D2N')" id="dur-3D2N">3D2N</button>
-      <button class="duration-btn @if(request('duration') == '4D3N') active @endif" onclick="switchDuration('4D3N')" id="dur-4D3N">4D3N</button>
-      <button class="duration-btn @if(request('duration') == '5D4N') active @endif" onclick="switchDuration('5D4N')" id="dur-5D4N">5D4N</button>
-      <button class="duration-btn @if(request('duration') == 'custom') active @endif" onclick="showCustomDuration()" id="dur-custom">+ Custom</button>
-    </div>
-
-    <!-- Custom Duration Input (hidden by default) -->
-    <div id="customDurationInput" class="mb-4" style="display:none;">
-      <div class="row align-items-center">
-        <div class="col-md-4">
-          <label class="form-label">Enter Custom Duration</label>
-          <input type="text" id="customDurationValue" class="form-control" placeholder="e.g., 5D4N, 1 Week" maxlength="20">
+    <div class="top-bar">
+        <div class="user-profile">
+            <div class="text-end">
+                <div style="font-size: 0.8rem; font-weight: 700;">{{ auth()->user()->name ?? 'Admin' }}</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted);">Administrator</div>
+            </div>
+            <div class="avatar-small">{{ substr(auth()->user()->name ?? 'A', 0, 1) }}</div>
         </div>
-        <div class="col-md-2">
-          <label class="form-label">&nbsp;</label>
-          <button type="button" onclick="applyCustomDuration()" class="btn btn-primary w-100">Apply</button>
+    </div>
+
+    <h4 class="fw-bold mb-4" style="font-size: 1.25rem;">Package Management</h4>
+
+    @if(session('success'))
+    <div class="alert alert-success border-0 shadow-sm mb-4" style="border-radius: 10px; font-size: 0.85rem;">
+        <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    <div class="card p-4">
+        <div class="package-tabs">
+            <button class="package-tab @if(request('type', 'standard') == 'standard') active @endif" onclick="switchTab('standard')">
+                Standard Charter
+            </button>
+            <button class="package-tab @if(request('type') == 'fullboard') active @endif" onclick="switchTab('fullboard')">
+                Full Board (Meals)
+            </button>
         </div>
-      </div>
+
+        <div class="d-flex gap-2 flex-wrap mb-4">
+            @foreach(['2D1N', '3D2N', '4D3N', '5D4N'] as $dur)
+                <button class="duration-btn @if(request('duration', '2D1N') == $dur) active @endif" onclick="switchDuration('{{ $dur }}')">{{ $dur }}</button>
+            @endforeach
+            <button class="duration-btn @if(request('duration') && !in_array(request('duration'), ['2D1N', '3D2N', '4D3N', '5D4N'])) active @endif" onclick="showCustomDuration()" id="dur-custom">
+                <i class="fa-solid fa-plus me-1"></i> Custom
+            </button>
+        </div>
+
+        <div id="customDurationInput" class="mb-4 bg-light p-3 rounded-3" style="display:none;">
+            <div class="row align-items-end g-2">
+                <div class="col-md-4">
+                    <label class="form-label">Custom Duration Name</label>
+                    <input type="text" id="customDurationValue" class="form-control" placeholder="e.g., 6D5N">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" onclick="applyCustomDuration()" class="btn btn-primary w-100 py-2 fw-bold">Apply</button>
+                </div>
+            </div>
+        </div>
+
+        @php
+        $currentType = request('type', 'standard');
+        $currentDuration = request('duration', '2D1N');
+        $searchName = $currentType == 'standard' ? 'Standard ' : 'Full Board ';
+        // Try to find package by combined name first (e.g., "Standard 2D1N")
+        $currentPackage = $packages->where('name', $searchName . $currentDuration)->first();
+        // Fallback to separate name and duration check
+        if (!$currentPackage) {
+            $currentPackage = $packages->where('name', $currentType == 'standard' ? 'Standard' : 'Full Board')->where('duration', $currentDuration)->first();
+        }
+        @endphp
+
+        <div class="package-card @if($currentPackage) exists @endif">
+            <div class="mb-4">
+                <h5 class="fw-bold mb-1">{{ $currentType == 'standard' ? 'Standard Package' : 'Full Board Package' }}</h5>
+                <span class="badge bg-secondary" style="font-size: 0.7rem;">{{ $currentDuration }}</span>
+            </div>
+
+            @if($currentPackage)
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-success small fw-bold mb-2"><i class="fa-solid fa-check-circle me-1"></i> Package Active</p>
+                        @if($currentType == 'standard')
+                            <div class="price-text">RM {{ number_format($currentPackage->price_standard, 0) }} <small class="text-muted fs-6">/ Charter</small></div>
+                        @else
+                            <div class="d-flex gap-4">
+                                <div>
+                                    <label class="form-label d-block">Adult</label>
+                                    <div class="price-text">RM {{ number_format($currentPackage->price_fullboard_adult, 0) }}</div>
+                                </div>
+                                <div>
+                                    <label class="form-label d-block">Child</label>
+                                    <div class="price-text">RM {{ number_format($currentPackage->price_fullboard_child, 0) }}</div>
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                    <div class="d-flex gap-2">
+                        <form method="POST" action="{{ route('admin.packages.destroy', $currentPackage->id) }}">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="btn btn-outline-danger px-4 fw-bold" onclick="return confirm('Remove this package?')">
+                                <i class="fa-solid fa-trash-can me-2"></i> Remove
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @else
+                <form method="POST" action="{{ route('admin.packages.store') }}">
+                    @csrf
+                    <input type="hidden" name="name" value="{{ $currentType == 'standard' ? 'Standard' : 'Full Board' }}">
+                    <input type="hidden" name="duration" value="{{ $currentDuration }}">
+                    <input type="hidden" name="is_active" value="1">
+
+                    <div class="row g-3">
+                        @if($currentType == 'standard')
+                            <div class="col-md-6">
+                                <label class="form-label">Standard Price (RM)</label>
+                                <input type="number" name="price_standard" class="form-control" required step="0.01">
+                            </div>
+                            <input type="hidden" name="price_fullboard_adult" value="0">
+                            <input type="hidden" name="price_fullboard_child" value="0">
+                        @else
+                            <div class="col-md-4">
+                                <label class="form-label">Adult Price (RM)</label>
+                                <input type="number" name="price_fullboard_adult" class="form-control" required step="0.01">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Child Price (RM)</label>
+                                <input type="number" name="price_fullboard_child" class="form-control" required step="0.01">
+                            </div>
+                            <input type="hidden" name="price_standard" value="0">
+                        @endif
+                        <div class="col-md-12">
+                            <label class="form-label">Short Description</label>
+                            <input type="text" name="description" class="form-control" placeholder="What's included in this price?">
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">
+                                <i class="fa-solid fa-plus me-2"></i> Create Package
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            @endif
+        </div>
     </div>
-
-    <!-- Current Selection Display -->
-    @php
-    $currentType = request('type', 'standard');
-    $currentDuration = request('duration', '2D1N');
-    $searchName = $currentType == 'standard' ? 'Standard ' : 'Full Board ';
-    // Try to find package by combined name first (e.g., "Standard 2D1N")
-    $currentPackage = $packages->where('name', $searchName . $currentDuration)->first();
-    // Fallback to separate name and duration check
-    if (!$currentPackage) {
-        $currentPackage = $packages->where('name', $currentType == 'standard' ? 'Standard' : 'Full Board')->where('duration', $currentDuration)->first();
-    }
-    @endphp
-
-    <!-- Standard Package Content -->
-    <div id="content-standard" @if(request('type', 'standard') == 'standard') style="display:block;" @else style="display:none;" @endif>
-      <div class="mb-4">
-        <h6 class="text-muted">Standard Package - {{ $currentDuration }}</h6>
-        <p class="text-muted small">Per charter pricing (entire boat)</p>
-      </div>
-
-      <div class="package-card @if($currentPackage && request('type', 'standard') == 'standard') exists @endif">
-        @if($currentPackage && request('type', 'standard') == 'standard')
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <h5 class="mb-2">Standard {{ $currentDuration }}</h5>
-              <p class="text-success mb-2"><strong>Currently Active</strong></p>
-              <p class="mb-1">Price: <span class="fw-bold">RM {{ number_format($currentPackage->price_standard, 0) }}</span></p>
-              <p class="text-muted small mb-0">Created: {{ $currentPackage->created_at->format('M d, Y') }}</p>
-            </div>
-            <div>
-              <button class="btn btn-sm btn-outline-primary me-2" onclick="showEditModal()">Edit Price</button>
-              <form method="POST" action="{{ route('admin.packages.destroy', $currentPackage->id) }}" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Remove this package?')">Remove</button>
-              </form>
-            </div>
-          </div>
-        @else
-          <form method="POST" action="{{ route('admin.packages.store') }}">
-            @csrf
-            <input type="hidden" name="name" value="Standard">
-            <input type="hidden" name="duration" value="{{ $currentDuration }}">
-            <input type="hidden" name="price_fullboard_adult" value="0">
-            <input type="hidden" name="price_fullboard_child" value="0">
-            <input type="hidden" name="is_active" value="1">
-
-            <h5 class="mb-3">Add Standard {{ $currentDuration }} Package</h5>
-            <div class="row align-items-center">
-              <div class="col-md-6">
-                <label class="form-label">Price (RM) *</label>
-                <input type="number" name="price_standard" class="form-control" required min="0" step="0.01">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Description</label>
-                <input type="text" name="description" class="form-control" placeholder="Optional">
-              </div>
-              <div class="col-12 mt-3">
-                <button type="submit" class="btn btn-success">+ Add Package</button>
-              </div>
-            </div>
-          </form>
-        @endif
-      </div>
-    </div>
-
-    <!-- Fullboard Package Content -->
-    <div id="content-fullboard" @if(request('type') == 'fullboard') style="display:block;" @else style="display:none;" @endif>
-      <div class="mb-4">
-        <h6 class="text-muted">Full Board Package - {{ $currentDuration }}</h6>
-        <p class="text-muted small">Per person pricing (includes meals)</p>
-      </div>
-
-      <div class="package-card @if($currentPackage && request('type') == 'fullboard') exists @endif">
-        @if($currentPackage && request('type') == 'fullboard')
-          <div class="d-flex justify-content-between align-items-start">
-            <div>
-              <h5 class="mb-2">Full Board {{ $currentDuration }}</h5>
-              <p class="text-success mb-2"><strong>Currently Active</strong></p>
-              <p class="mb-1">Adult: <span class="fw-bold">RM {{ number_format($currentPackage->price_fullboard_adult, 0) }}</span></p>
-              <p class="mb-1">Child: <span class="fw-bold">RM {{ number_format($currentPackage->price_fullboard_child, 0) }}</span></p>
-              <p class="text-muted small mb-0">Created: {{ $currentPackage->created_at->format('M d, Y') }}</p>
-            </div>
-            <div>
-              <button class="btn btn-sm btn-outline-primary me-2" onclick="showEditModal()">Edit Price</button>
-              <form method="POST" action="{{ route('admin.packages.destroy', $currentPackage->id) }}" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Remove this package?')">Remove</button>
-              </form>
-            </div>
-          </div>
-        @else
-          <form method="POST" action="{{ route('admin.packages.store') }}">
-            @csrf
-            <input type="hidden" name="name" value="Full Board">
-            <input type="hidden" name="duration" value="{{ $currentDuration }}">
-            <input type="hidden" name="price_standard" value="0">
-            <input type="hidden" name="is_active" value="1">
-
-            <h5 class="mb-3">Add Full Board {{ $currentDuration }} Package</h5>
-            <div class="row align-items-center">
-              <div class="col-md-4">
-                <label class="form-label">Adult Price (RM) *</label>
-                <input type="number" name="price_fullboard_adult" class="form-control" required min="0" step="0.01">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Child Price (RM) *</label>
-                <input type="number" name="price_fullboard_child" class="form-control" required min="0" step="0.01">
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Description</label>
-                <input type="text" name="description" class="form-control" placeholder="Optional">
-              </div>
-              <div class="col-12 mt-3">
-                <button type="submit" class="btn btn-success">+ Add Package</button>
-              </div>
-            </div>
-          </form>
-        @endif
-      </div>
-    </div>
-
-  </div>
-
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 function switchTab(type) {
-  const url = new URL(window.location);
-  url.searchParams.set('type', type);
-  url.searchParams.set('duration', url.searchParams.get('duration') || '2D1N');
-  window.location.href = url.toString();
+    const url = new URL(window.location);
+    url.searchParams.set('type', type);
+    window.location.href = url.toString();
 }
 
 function switchDuration(duration) {
-  const url = new URL(window.location);
-  url.searchParams.set('duration', duration);
-  url.searchParams.set('type', url.searchParams.get('type') || 'standard');
-  window.location.href = url.toString();
+    const url = new URL(window.location);
+    url.searchParams.set('duration', duration);
+    window.location.href = url.toString();
 }
 
 function showCustomDuration() {
-  document.getElementById('customDurationInput').style.display = 'block';
-  document.getElementById('customDurationValue').focus();
-
-  // Update active state
-  document.querySelectorAll('.duration-btn').forEach(btn => btn.classList.remove('active'));
-  document.getElementById('dur-custom').classList.add('active');
+    document.getElementById('customDurationInput').style.display = 'block';
 }
 
 function applyCustomDuration() {
-  const value = document.getElementById('customDurationValue').value.trim();
-  if (!value) {
-    alert('Please enter a duration');
-    return;
-  }
-
-  const url = new URL(window.location);
-  url.searchParams.set('duration', value);
-  url.searchParams.set('type', url.searchParams.get('type') || 'standard');
-  window.location.href = url.toString();
+    const val = document.getElementById('customDurationValue').value;
+    if(val) switchDuration(val);
 }
 
-// Show custom input if URL has custom duration
 document.addEventListener('DOMContentLoaded', function() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const duration = urlParams.get('duration');
-
-  // Check if duration is not one of the presets
-  const presets = ['2D1N', '3D2N', '4D3N', '5D4N'];
-  if (duration && !presets.includes(duration)) {
-    document.getElementById('customDurationInput').style.display = 'block';
-    document.getElementById('customDurationValue').value = duration;
-
-    document.querySelectorAll('.duration-btn').forEach(btn => btn.classList.remove('active'));
-    document.getElementById('dur-custom').classList.add('active');
-  }
+    const params = new URLSearchParams(window.location.search);
+    const dur = params.get('duration');
+    if(dur && !['2D1N', '3D2N', '4D3N', '5D4N'].includes(dur)) {
+        document.getElementById('customDurationInput').style.display = 'block';
+        document.getElementById('customDurationValue').value = dur;
+    }
 });
 </script>
 </body>

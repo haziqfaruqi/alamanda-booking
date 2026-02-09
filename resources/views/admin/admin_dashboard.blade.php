@@ -1,254 +1,212 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Admin Lists | Alamanda Houseboat</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Admin Lists | Alamanda Houseboat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
-<style>
-body{
-  font-family:'Inter',sans-serif;
-  background:#f4f6fb;
-  overflow-x:hidden;
-}
+    <style>
+        :root {
+            --main-bg: #f4f7fa;
+            --accent: #4e73df;
+            --text-main: #2d3748;
+            --text-muted: #718096;
+            --card-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.05);
+        }
 
-/* ===== SIDEBAR ===== */
-.sidebar{
-  width:260px;
-  background:#fff;
-  min-height:100vh;
-  border-right:1px solid #e5e7eb;
-  position:fixed;
-  top:0;
-  left:0;
-  padding:24px;
-}
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--main-bg);
+            color: var(--text-main);
+            margin: 0;
+        }
 
-/* ===== MAIN ===== */
-.main-content{
-  margin-left:260px;
-  padding:32px;
-  width:calc(100vw - 260px);
-}
+        .main-content {
+            margin-left: 260px;
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
 
-/* ===== TOP BAR ===== */
-.top-bar{
-  display:flex;
-  justify-content:flex-end;
-  align-items:center;
-  gap:16px;
-  margin-bottom:30px;
-}
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
 
-.avatar{
-  width:46px;
-  height:46px;
-  border-radius:50%;
-  background:#4f46e5;
-  color:#fff;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-}
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            padding: 6px 14px;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+        }
 
-/* ===== CARD ===== */
-.card{
-  border:none;
-  border-radius:18px;
-  box-shadow:0 10px 28px rgba(0,0,0,.06);
-}
+        .avatar-small {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 12px;
+        }
 
-.password{
-  font-family:monospace;
-  letter-spacing:1px;
-}
-</style>
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .page-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .table thead th {
+            background-color: #f8f9fc;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            border: none;
+            padding: 15px;
+        }
+
+        .table tbody td {
+            padding: 15px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .action-btn {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Modal styling */
+        .modal-content { border: none; border-radius: 15px; }
+        .form-control { border-radius: 8px; font-size: 0.9rem; padding: 10px; }
+    </style>
 </head>
 
 <body>
 
-<!-- SIDEBAR -->
 @include('layouts.admin-sidebar', ['activePage' => 'admin'])
 
-<!-- MAIN -->
 <main class="main-content">
-
-  <!-- TOP BAR -->
-  <div class="top-bar">
-    <div class="text-end">
-      <div class="fw-semibold">{{ auth()->user()->name ?? 'Admin' }}</div>
-      <small class="text-muted">Administrator</small>
-    </div>
-    <div class="avatar">{{ substr(auth()->user()->name, 0, 1) ?? 'A' }}</div>
-  </div>
-
-  <!-- HEADER -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h4 class="fw-bold mb-0">Admin Lists</h4>
-    {{-- <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAdminModal">
-      + Add Admin
-    </button> --}}
-  </div>
-
-  <!-- SUCCESS MESSAGE -->
-  @if(session('success'))
-  <div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-  @endif
-
-  <!-- ERROR MESSAGE -->
-  @if(session('error'))
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {{ session('error') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-  @endif
-
-  @if($errors->any())
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    <ul class="mb-0">
-      @foreach($errors->all() as $error)
-        <li>{{ $error }}</li>
-      @endforeach
-    </ul>
-    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-  </div>
-  @endif
-
-  <!-- CARD -->
-  <div class="card p-4">
-
-    <div class="table-responsive">
-      <table class="table align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>#</th>
-            <th>Admin Name</th>
-            <th>Email</th>
-            <th>Created Date</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          @forelse($admins ?? [] as $index => $admin)
-          <tr>
-            <td>{{ $index + 1 }}</td>
-            <td>{{ $admin->name }}</td>
-            <td>{{ $admin->email }}</td>
-            <td>{{ $admin->created_at->format('d M Y') }}</td>
-            <td>
-              <button class="btn btn-sm btn-outline-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#editAdminModal{{ $admin->id }}">
-                Edit
-              </button>
-              <form method="POST" action="{{ route('admin.admins.destroy', $admin->id) }}" style="display:inline;">
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this admin?')">
-                  Delete
-                </button>
-              </form>
-            </td>
-          </tr>
-          @empty
-          <tr>
-            <td colspan="5" class="text-center text-muted py-4">No admins found</td>
-          </tr>
-          @endforelse
-        </tbody>
-      </table>
+    <div class="top-bar">
+        <div class="user-profile">
+            <div class="text-end">
+                <div style="font-size: 0.8rem; font-weight: 700;">{{ auth()->user()->name ?? 'Admin' }}</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted);">Administrator</div>
+            </div>
+            <div class="avatar-small">{{ substr(auth()->user()->name ?? 'A', 0, 1) }}</div>
+        </div>
     </div>
 
-  </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="page-title mb-0">Admin Management</h4>
+        </div>
 
+    @if(session('success'))
+    <div class="alert alert-success border-0 shadow-sm mb-4" style="border-radius: 10px; font-size: 0.85rem;">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
+
+    <div class="card p-2">
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">#</th>
+                        <th>Admin Name</th>
+                        <th>Email</th>
+                        <th>Joined Date</th>
+                        <th class="text-end pe-4">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($admins ?? [] as $index => $admin)
+                    <tr>
+                        <td class="ps-4 text-muted">{{ $index + 1 }}</td>
+                        <td class="fw-bold">{{ $admin->name }}</td>
+                        <td>{{ $admin->email }}</td>
+                        <td>{{ $admin->created_at->format('d M Y') }}</td>
+                        <td class="text-end pe-4">
+                            <button type="button" class="btn btn-sm btn-outline-primary action-btn me-1"
+                                data-bs-toggle="modal"
+                                data-bs-target="#editAdminModal{{ $admin->id }}">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </button>
+                            
+                            <form method="POST" action="{{ route('admin.admins.destroy', $admin->id) }}" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-sm btn-outline-danger action-btn" onclick="return confirm('Delete this admin?')">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr><td colspan="5" class="text-center py-5 text-muted">No admins found.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 </main>
 
-<!-- ADD ADMIN MODAL -->
-<div class="modal fade" id="addAdminModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Add New Admin</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <form method="POST" action="{{ route('admin.admins.store') }}">
-        @csrf
-
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Admin Name</label>
-            <input type="text" name="name" class="form-control" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Password</label>
-            <input type="password" name="password" class="form-control" required minlength="6">
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Add Admin</button>
-        </div>
-      </form>
-
-    </div>
-  </div>
-</div>
-
 @foreach($admins ?? [] as $admin)
-<!-- EDIT ADMIN MODAL -->
-<div class="modal fade" id="editAdminModal{{ $admin->id }}" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Edit Admin</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <form method="POST" action="{{ route('admin.admins.update', $admin->id) }}">
-        @csrf
-        @method('PUT')
-
-        <div class="modal-body">
-          <div class="mb-3">
-            <label class="form-label">Admin Name</label>
-            <input type="text" name="name" class="form-control" value="{{ $admin->name }}" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" value="{{ $admin->email }}" required>
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">New Password (leave empty to keep current)</label>
-            <input type="password" name="password" class="form-control" minlength="6">
-          </div>
+<div class="modal fade" id="editAdminModal{{ $admin->id }}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">Edit Administrator</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ route('admin.admins.update', $admin->id) }}">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Admin Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ $admin->name }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ $admin->email }}" required>
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label small fw-bold">New Password</label>
+                        <input type="password" name="password" class="form-control" placeholder="Leave empty to keep current">
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light btn-sm px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4">Update Admin</button>
+                </div>
+            </form>
         </div>
-
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </div>
-      </form>
-
     </div>
-  </div>
 </div>
 @endforeach
 

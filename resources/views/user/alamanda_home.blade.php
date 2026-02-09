@@ -26,7 +26,7 @@
         <!-- Content -->
         <div class="relative z-10 max-w-4xl mx-auto space-y-8 fade-in">
             <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/20 bg-white/5 backdrop-blur-sm text-xs text-white font-medium tracking-wide uppercase">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Available for Summer 2024
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Available for Summer 2026
             </span>
 
             <h1 class="text-5xl md:text-7xl font-semibold text-white tracking-tighter leading-[1.1]">
@@ -57,12 +57,12 @@
             <!-- Image Grid -->
             <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-4 translate-y-8">
-                    <img src="{{ asset('storage/pic/img1.jpeg') }}" alt="Deck view" class="w-full h-64 object-cover rounded-2xl shadow-sm">
-                    <img src="{{ asset('storage/pic/img2.jpg') }}" alt="Water view" class="w-full h-48 object-cover rounded-2xl shadow-sm">
+                    <img src="{{ asset('storage/pic/gallery_4.png') }}" alt="Deck view" class="w-full h-64 object-cover rounded-2xl shadow-sm">
+                    <img src="{{ asset('storage/pic/gallery_5.jpg') }}" alt="Water view" class="w-full h-48 object-cover rounded-2xl shadow-sm">
                 </div>
                 <div class="space-y-4">
                     <img src="{{ asset('storage/pic/img3.jpg') }}" alt="Interior" class="w-full h-48 object-cover rounded-2xl shadow-sm">
-                    <img src="https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800&q=80" alt="Camping" class="w-full h-64 object-cover rounded-2xl shadow-sm">
+                    <img src="{{ asset('storage/pic/gallery_1.jpg') }}" alt="Camping" class="w-full h-64 object-cover rounded-2xl shadow-sm">
                 </div>
             </div>
 
@@ -384,7 +384,7 @@
                 <div class="grid md:grid-cols-3 gap-6 text-sm text-zinc-600">
                     <div class="bg-white p-6 rounded-xl border border-zinc-100 shadow-sm">
                         <div class="font-medium text-zinc-900 mb-2">Departure</div>
-                        Summer Cruise departs from Gawi Jetty at <span class="text-zinc-900">1:00 PM</span> sharp.
+                        Alamanda Houseboat departs from Gawi Jetty at <span class="text-zinc-900">1:00 PM</span> sharp.
                     </div>
                     <div class="bg-white p-6 rounded-xl border border-zinc-100 shadow-sm">
                         <div class="font-medium text-zinc-900 mb-2">Check-in / Out</div>
