@@ -224,33 +224,90 @@
             </div>
 
             @if($currentPackage)
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="text-success small fw-bold mb-2"><i class="fa-solid fa-check-circle me-1"></i> Package Active</p>
-                        @if($currentType == 'standard')
-                            <div class="price-text">RM {{ number_format($currentPackage->price_standard, 0) }} <small class="text-muted fs-6">/ Charter</small></div>
-                        @else
-                            <div class="d-flex gap-4">
-                                <div>
-                                    <label class="form-label d-block">Adult</label>
-                                    <div class="price-text">RM {{ number_format($currentPackage->price_fullboard_adult, 0) }}</div>
+                <!-- Display View -->
+                <div id="displayView">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-success small fw-bold mb-2"><i class="fa-solid fa-check-circle me-1"></i> Package Active</p>
+                            @if($currentType == 'standard')
+                                <div class="price-text">RM {{ number_format($currentPackage->price_standard, 0) }} <small class="text-muted fs-6">/ Charter</small></div>
+                            @else
+                                <div class="d-flex gap-4">
+                                    <div>
+                                        <label class="form-label d-block">Adult</label>
+                                        <div class="price-text">RM {{ number_format($currentPackage->price_fullboard_adult, 0) }}</div>
+                                    </div>
+                                    <div>
+                                        <label class="form-label d-block">Child</label>
+                                        <div class="price-text">RM {{ number_format($currentPackage->price_fullboard_child, 0) }}</div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="form-label d-block">Child</label>
-                                    <div class="price-text">RM {{ number_format($currentPackage->price_fullboard_child, 0) }}</div>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="d-flex gap-2">
-                        <form method="POST" action="{{ route('admin.packages.destroy', $currentPackage->id) }}">
-                            @csrf @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger px-4 fw-bold" onclick="return confirm('Remove this package?')">
-                                <i class="fa-solid fa-trash-can me-2"></i> Remove
+                            @endif
+                            @if($currentPackage->description)
+                                <p class="text-muted small mt-2 mb-0">{{ $currentPackage->description }}</p>
+                            @endif
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" onclick="showEditForm()" class="btn btn-outline-primary px-4 fw-bold">
+                                <i class="fa-solid fa-pen-to-square me-2"></i> Edit
                             </button>
-                        </form>
+                            <form method="POST" action="{{ route('admin.packages.destroy', $currentPackage->id) }}" class="d-inline">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="btn btn-outline-danger px-3 fw-bold" onclick="return confirm('Remove this package?')">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </form>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Edit Form (hidden by default) -->
+                <form id="editForm" method="POST" action="{{ route('admin.packages.update', $currentPackage->id) }}" style="display:none;">
+                    @csrf @method('PUT')
+                    <input type="hidden" name="name" value="{{ $currentType == 'standard' ? 'Standard' : 'Full Board' }}">
+                    <input type="hidden" name="duration" value="{{ $currentDuration }}">
+                    <input type="hidden" name="is_active" value="1">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div>
+                            <p class="text-primary small fw-bold mb-2"><i class="fa-solid fa-pen-to-square me-1"></i> Edit Package</p>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="button" onclick="hideEditForm()" class="btn btn-outline-secondary px-4 fw-bold">
+                                <i class="fa-solid fa-times me-2"></i> Cancel
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        @if($currentType == 'standard')
+                            <div class="col-md-6">
+                                <label class="form-label">Standard Price (RM)</label>
+                                <input type="number" name="price_standard" class="form-control" required step="0.01" value="{{ $currentPackage->price_standard }}">
+                            </div>
+                            <input type="hidden" name="price_fullboard_adult" value="0">
+                            <input type="hidden" name="price_fullboard_child" value="0">
+                        @else
+                            <div class="col-md-4">
+                                <label class="form-label">Adult Price (RM)</label>
+                                <input type="number" name="price_fullboard_adult" class="form-control" required step="0.01" value="{{ $currentPackage->price_fullboard_adult }}">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Child Price (RM)</label>
+                                <input type="number" name="price_fullboard_child" class="form-control" required step="0.01" value="{{ $currentPackage->price_fullboard_child }}">
+                            </div>
+                            <input type="hidden" name="price_standard" value="0">
+                        @endif
+                        <div class="col-md-12">
+                            <label class="form-label">Short Description</label>
+                            <input type="text" name="description" class="form-control" placeholder="What's included in this price?" value="{{ $currentPackage->description ?? '' }}">
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary px-4 py-2 fw-bold">
+                                <i class="fa-solid fa-save me-2"></i> Update Package
+                            </button>
+                        </div>
+                    </div>
+                </form>
             @else
                 <form method="POST" action="{{ route('admin.packages.store') }}">
                     @csrf
@@ -294,6 +351,16 @@
 </main>
 
 <script>
+function showEditForm() {
+    document.getElementById('displayView').style.display = 'none';
+    document.getElementById('editForm').style.display = 'block';
+}
+
+function hideEditForm() {
+    document.getElementById('displayView').style.display = 'block';
+    document.getElementById('editForm').style.display = 'none';
+}
+
 function switchTab(type) {
     const url = new URL(window.location);
     url.searchParams.set('type', type);
