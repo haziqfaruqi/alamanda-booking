@@ -30,8 +30,13 @@ class GoogleCalendarService
 
         $jsonPath = env('GOOGLE_CALENDAR_JSON');
 
+        // Fallback to default path if env is not set
+        if (empty($jsonPath)) {
+            $jsonPath = base_path('storage/app/google-calendar-credentials.json');
+        }
+
         // Try relative path from base directory
-        if ($jsonPath && !str_starts_with($jsonPath, '/')) {
+        if ($jsonPath && !str_starts_with($jsonPath, '/') && !str_contains($jsonPath, ':')) {
             $jsonPath = base_path($jsonPath);
         }
 

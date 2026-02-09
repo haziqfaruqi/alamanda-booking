@@ -77,9 +77,7 @@ class AuthController extends Controller
             'role' => 'user',
         ]);
 
-        Auth::login($user);
-
-        return redirect('/booking');
+        return redirect()->route('login')->with('status', 'Registration successful! Please login with your credentials.');
     }
 
     /**
