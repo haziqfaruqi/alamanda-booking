@@ -208,7 +208,13 @@ body{
     @php
     $currentType = request('type', 'standard');
     $currentDuration = request('duration', '2D1N');
-    $currentPackage = $packages->where('name', $currentType == 'standard' ? 'Standard' : 'Full Board')->where('duration', $currentDuration)->first();
+    $searchName = $currentType == 'standard' ? 'Standard ' : 'Full Board ';
+    // Try to find package by combined name first (e.g., "Standard 2D1N")
+    $currentPackage = $packages->where('name', $searchName . $currentDuration)->first();
+    // Fallback to separate name and duration check
+    if (!$currentPackage) {
+        $currentPackage = $packages->where('name', $currentType == 'standard' ? 'Standard' : 'Full Board')->where('duration', $currentDuration)->first();
+    }
     @endphp
 
     <!-- Standard Package Content -->
