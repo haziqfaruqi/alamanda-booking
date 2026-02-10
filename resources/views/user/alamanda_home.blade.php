@@ -76,7 +76,7 @@
                     Alamanda Houseboat <br> Adventures.
                 </h2>
                 <blockquote class="pl-4 border-l-2 border-indigo-500 italic text-xl text-zinc-600">
-                    "Embark on an Unforgettable Summer Cruise at Kenyir Lake"
+                    "Embark on an Unforgettable Alamanda Houseboat at Kenyir Lake"
                 </blockquote>
                 <div class="space-y-6 text-zinc-500 leading-relaxed">
                     <p>
