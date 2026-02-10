@@ -33,6 +33,7 @@ LPT*
 /public/hot
 /public/build
 /storage/app/public/*
+!storage/app/public/.gitkeep
 /storage/framework/cache/*
 !storage/framework/cache/.gitkeep
 /storage/framework/sessions/*
